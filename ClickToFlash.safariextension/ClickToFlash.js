@@ -1,20 +1,34 @@
 var elementMapping = [];
 
+function nodeInserted(event) {
+	if (event.target instanceof HTMLEmbedElement) {
+		removeFlash();
+	}
+}
+
+function startListening() {
+	document.addEventListener ("DOMNodeInserted", nodeInserted, false);
+}
+
+function stopListening() {
+	document.removeEventListener ("DOMNodeInserted", nodeInserted, false);
+}
+
 function clickPlaceholder(embedID) {
 	// Temporarily disable watching the DOM
 	// Otherwise, we'll trigger ourselves by adding the <embed>
-	document.getElementsByTagName("html")[0].removeEventListener ("DOMSubtreeModified", removeFlash, false);
+	stopListening();
 	
 	var placeholder = document.getElementById("ClickToFlashPlaceholder" + embedID);
 	var embedElement = elementMapping[embedID];
 	elementMapping[embedID] = null;
 	placeholder.parentNode.replaceChild(embedElement, placeholder);
 	
-	document.getElementsByTagName("html")[0].addEventListener ("DOMSubtreeModified", removeFlash, false);
+	setTimeout(startListening, 500);
 }
 
 function removeFlash() {
-	document.getElementsByTagName("html")[0].removeEventListener ("DOMSubtreeModified", removeFlash, false);
+	stopListening();
 		
 	var embedElements = document.getElementsByTagName("embed");
 	for (i = 0; i < embedElements.length; i++) {
@@ -58,7 +72,7 @@ function removeFlash() {
 		}
 	}
 	
-	document.getElementsByTagName("html")[0].addEventListener ("DOMSubtreeModified", removeFlash, false);
+	startListening();
 }
 
 removeFlash();
