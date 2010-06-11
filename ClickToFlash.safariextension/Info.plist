@@ -20,7 +20,7 @@
 	<dict>
 		<key>Scripts</key>
 		<dict>
-			<key>End</key>
+			<key>Start</key>
 			<array>
 				<string>ClickToFlash.js</string>
 			</array>
@@ -30,6 +30,8 @@
 			<string>styles.css</string>
 		</array>
 	</dict>
+	<key>Description</key>
+	<string>Blocks Flash content until you want it</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -42,5 +44,7 @@
 			<string>All</string>
 		</dict>
 	</dict>
+	<key>Website</key>
+	<string>http://github.com/mattball/ClickToFlash-safari-extension</string>
 </dict>
 </plist>
