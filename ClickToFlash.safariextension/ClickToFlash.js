@@ -43,8 +43,17 @@ ClickToFlash.prototype.removeFlash = function() {
 	this.stopListening();
 	
 	var embedElements = document.getElementsByTagName("embed");
+	var objectElements = document.getElementsByTagName("object");
+	var flashElements = [];
+	for (i = 0; i < objectElements.length; i++) {
+		flashElements[flashElements.length] = objectElements[i];
+	}
 	for (i = 0; i < embedElements.length; i++) {
-		var element = embedElements[i];
+		flashElements[flashElements.length] = embedElements[i];
+	}
+	
+	for (i = 0; i < flashElements.length; i++) {
+		var element = flashElements[i];
 
 		// Check if it's already in the mapping dictionary
 		// If so, the user must have clicked it already
@@ -70,7 +79,6 @@ ClickToFlash.prototype.removeFlash = function() {
 		placeholderElement.id = "ClickToFlashPlaceholder" + id;
 		placeholderElement.setAttribute("contextmenu", "ClickToFlashContextMenu");
 
-	//	placeholderElement.onclick = function(){return clickPlaceholder(id)};
 		var clickHandler = this;
 		placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
 
@@ -88,5 +96,3 @@ ClickToFlash.prototype.removeFlash = function() {
 
 	this.startListening();
 }
-
-new ClickToFlash().removeFlash();
