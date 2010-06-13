@@ -2,10 +2,27 @@
 	background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.15)), to(rgba(0, 0, 0, 0.15))) !important;
 	border: 1px solid rgba(0, 0, 0, 0.5) !important;
 	-webkit-user-select: none !important;
+	display: table;
 }
 
 .clickToFlashPlaceholder:active {
 	background: -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.15)), to(rgba(0, 0, 0, 0.15))) !important;
+}
+
+.logoVerticalPosition {
+	display: table-cell !important; 
+	vertical-align: middle !important; 
+/*	width: 100% !important; */
+	
+/*	float: left;
+	position: relative;
+	left: 50%;*/
+}
+
+.logoHorizontalPosition {
+	float: left;
+	position: relative;
+	left: 50%;
 }
 
 .clickToFlashPlaceholder .logo {
@@ -13,8 +30,6 @@
 	border: 8px solid rgba(0, 0, 0, 0.3) !important;
 	font-size: 40px !important;
 	width: auto !important;
-	margin: 0 auto !important;
-	position: absolute !important;
 	color: rgba(0, 0, 0, 0.8) !important;
 	font-weight: bold !important;
 	padding: 0 10px !important;
@@ -22,4 +37,10 @@
 	cursor: default !important;
 	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+	float: left;
+	margin: 0 auto;
+	
+	float: left;
+	position: relative;
+	left: -50%;
 }

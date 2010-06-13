@@ -27,7 +27,8 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 	this.stopListening();
 	
 	var clickedElement = event.target;
-	if (event.target.className == "logo") {
+	
+	while (clickedElement.className != "clickToFlashPlaceholder") {
 		clickedElement = clickedElement.parentNode;
 	}
 	
@@ -69,28 +70,29 @@ ClickToFlash.prototype.removeFlash = function() {
 		placeholderElement.style.height = element.offsetHeight + "px";
 		placeholderElement.className = "clickToFlashPlaceholder";
 
-		var logoElement = document.createElement("div");
-		logoElement.innerHTML = "Flash";
-		logoElement.className = "logo";
-		placeholderElement.appendChild(logoElement);
-
 		var id = this.elementMapping.length;
 		this.elementMapping[id] = element;
 		placeholderElement.id = "ClickToFlashPlaceholder" + id;
-		placeholderElement.setAttribute("contextmenu", "ClickToFlashContextMenu");
 
 		var clickHandler = this;
 		placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
 
 		element.parentNode.replaceChild(placeholderElement, element);
-
-		// Position the logo correctly
-		logoElement.style.left = (placeholderElement.offsetWidth - logoElement.offsetWidth)/2.0 + "px";
-		logoElement.style.top = (placeholderElement.offsetHeight - logoElement.offsetHeight)/2.0 + "px";
-
+		
 		// Don't display the logo if the box is too small
-		if (placeholderElement.offsetWidth < 100 || placeholderElement.offsetHeight < 50) {
-			logoElement.style.display = "none";
+		if (placeholderElement.offsetWidth > 100 && placeholderElement.offsetHeight > 50) {
+			var verticalPositionElement = document.createElement("div");
+			verticalPositionElement.className = "logoVerticalPosition";
+			placeholderElement.appendChild(verticalPositionElement);
+
+			var horizontalPositionElement = document.createElement("div");
+			horizontalPositionElement.className = "logoHorizontalPosition";
+			verticalPositionElement.appendChild(horizontalPositionElement);
+
+			var logoElement = document.createElement("div");
+			logoElement.innerHTML = "Flash";
+			logoElement.className = "logo";
+			horizontalPositionElement.appendChild(logoElement);
 		}
 	}
 
