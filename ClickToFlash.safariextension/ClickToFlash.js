@@ -40,6 +40,17 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 	setTimeout(this.startListening, 500);
 }
 
+ClickToFlash.prototype.getFlashVariable = function(flashVars, key) {
+	var vars = flashVars.split("&");
+	for (var i=0; i < vars.length; i++) {
+		var keyValuePair = vars[i].split("=");
+		if (keyValuePair[0] == key) {
+			return keyValuePair[1];
+		}
+	}
+	return null;
+}
+
 ClickToFlash.prototype.removeFlash = function() {
 	this.stopListening();
 	
@@ -55,6 +66,54 @@ ClickToFlash.prototype.removeFlash = function() {
 	
 	for (i = 0; i < flashElements.length; i++) {
 		var element = flashElements[i];
+		
+		// Deal with h264 YouTube videos
+		var youTubeShouldUseH264 = true;
+		if (youTubeShouldUseH264) {
+			var flashvars = element.getAttribute("flashvars");
+			var src = element.src;
+			var fromYouTube = (src && src.indexOf("youtube.com") != -1) ||
+			                  (src && src.indexOf("youtube-nocookie.com") != -1) ||
+			                  (src && src.indexOf("ytimg.com") != -1) ||
+			                  (flashvars && flashvars.indexOf("youtube.com") != -1) ||
+			                  (flashvars && flashvars.indexOf("youtube-nocookie.com") != -1) ||
+			                  (flashvars && flashvars.indexOf("ytimg.com") != -1);
+			
+			if (fromYouTube) {
+				var videoID = this.getFlashVariable(flashvars, "video_id");
+				var videoHash = this.getFlashVariable(flashvars, "t");
+				
+				// Check if there's an h264 version available
+				var h264URL = "http://www.youtube.com/get_video?fmt=18&video_id=" + videoID + "&t=" + videoHash;
+				var h264exists = true;
+				if (h264exists) {
+					var videoURL = h264URL;
+					
+					// Check if there's a high-res h264 version available
+					var youTubeShouldUseHighResH264 = true;
+					if (youTubeShouldUseHighResH264) {
+						var highResH264URL = "http://www.youtube.com/get_video?fmt=22&video_id=" + videoID + "&t=" + videoHash;
+						var highResH264exists = true;
+						if (highResH264exists) {
+							videoURL = highResH264URL;
+						}
+					}
+					
+					var videoElement = document.createElement("video");
+					videoElement.src = videoURL;
+					videoElement.setAttribute("controls", "controls");
+					if (this.getFlashVariable(flashvars, "autoplay") == "1") {
+						videoElement.setAttribute("autoplay", "autoplay");
+					}
+					videoElement.style = element.style;
+					videoElement.style.width = element.offsetWidth + "px";
+					videoElement.style.height = element.offsetHeight + "px";
+					
+					element.parentNode.replaceChild(videoElement, element);
+					continue;
+				}
+			}
+		}
 
 		// Check if it's already in the mapping dictionary
 		// If so, the user must have clicked it already
