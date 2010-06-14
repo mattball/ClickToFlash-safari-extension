@@ -4,6 +4,8 @@ function ClickToFlash() {
 	this.videoElementMapping = new Array();
 	this.largeVideoElementMapping = new Array();
 	
+	this.settings = null;
+	
 	var _this = this;
 	this.nodeInsertedTrampoline = function(event) {
 		_this.nodeInserted(event);
@@ -12,6 +14,8 @@ function ClickToFlash() {
 	this.respondToMessage = function(event) {
 		if (event.name == "getURLExists") {
 			_this.getURLExists(event);
+		} else if (event.name == "getSettings") {
+			_this.getSettings(event);
 		}
 	}
 	
@@ -70,6 +74,10 @@ ClickToFlash.prototype.getFlashVariable = function(flashVars, key) {
 }
 
 ClickToFlash.prototype.processYouTubeElement = function(element) {
+	if (!this.settings["useH264"]) {
+		return;
+	}
+	
 	var flashvars = element.getAttribute("flashvars");
 	var videoID = this.getFlashVariable(flashvars, "video_id");
 	var videoHash = this.getFlashVariable(flashvars, "t");
@@ -84,35 +92,6 @@ ClickToFlash.prototype.processYouTubeElement = function(element) {
 	urlCheckArgs.urlType = "normal";
 	
 	safari.self.tab.dispatchMessage("checkIfURLExists", urlCheckArgs);
-/*
-	if (h264exists) {
-		var videoURL = h264URL;
-
-		// Check if there's a high-res h264 version available
-		var youTubeShouldUseHighResH264 = true;
-		if (youTubeShouldUseHighResH264) {
-			var highResH264URL = "http://www.youtube.com/get_video?fmt=22&video_id=" + videoID + "&t=" + videoHash;
-			var highResH264exists = true;
-			if (highResH264exists) {
-				videoURL = highResH264URL;
-			}
-		}
-
-		var videoElement = document.createElement("video");
-		videoElement.src = videoURL;
-		videoElement.setAttribute("controls", "controls");
-		if (this.getFlashVariable(flashvars, "autoplay") == "1") {
-			videoElement.setAttribute("autoplay", "autoplay");
-		}
-		videoElement.style = element.style;
-		videoElement.style.width = element.offsetWidth + "px";
-		videoElement.style.height = element.offsetHeight + "px";
-
-		element.parentNode.replaceChild(videoElement, element);
-	} else {
-		// No h264 version available, so treat it like a normal element
-		this.processFlashElement(element); 
-	}*/
 }
 
 ClickToFlash.prototype.processFlashElement = function(element) {
@@ -134,7 +113,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 
 	var clickHandler = this;
 	placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
-	alert(element);
+
 	element.parentNode.replaceChild(placeholderElement, element);
 	
 	// Don't display the logo if the box is too small
@@ -168,6 +147,11 @@ ClickToFlash.prototype.removeFlash = function() {
 	}
 	
 	for (i = 0; i < flashElements.length; i++) {
+		if (!this.settings) {
+			safari.self.tab.dispatchMessage("getSettings", null);
+			return;
+		}
+		
 		var element = flashElements[i];
 		element.elementID = this.elementMapping.length;
 		this.processFlashElement(element);
@@ -227,8 +211,7 @@ ClickToFlash.prototype.getURLExists = function(event) {
 			var placeholderLogo = placeholder.firstChild.firstChild.firstChild;
 			placeholderLogo.innerHTML = "YouTube";
 
-			var shouldUseHDH264 = true;
-			if (shouldUseHDH264) {
+			if (this.settings["useLargeH264"]) {
 				var videoID = this.getFlashVariable(flashvars, "video_id");
 				var videoHash = this.getFlashVariable(flashvars, "t");
 
@@ -266,3 +249,10 @@ ClickToFlash.prototype.getURLExists = function(event) {
 	}
 }
 
+ClickToFlash.prototype.getSettings = function(event) {
+	this.settings = [];
+	this.settings["useH264"] = event.message.useH264;
+	this.settings["useLargeH264"] = event.message.useLargeH264;
+	
+	this.removeFlash();
+}
