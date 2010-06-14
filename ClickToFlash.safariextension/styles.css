@@ -11,12 +11,7 @@
 
 .logoVerticalPosition {
 	display: table-cell !important; 
-	vertical-align: middle !important; 
-/*	width: 100% !important; */
-	
-/*	float: left;
-	position: relative;
-	left: 50%;*/
+	vertical-align: middle !important;
 }
 
 .logoHorizontalPosition {
@@ -32,14 +27,14 @@
 	width: auto !important;
 	color: rgba(0, 0, 0, 0.8) !important;
 	font-weight: bold !important;
-	padding: 0 10px !important;
+	padding: 28px 10px 15px 10px !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
 	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
 	float: left;
 	margin: 0 auto;
-	
+	line-height: 0 !important;
 	float: left;
 	position: relative;
 	left: -50%;
