@@ -7,13 +7,13 @@
 	<key>CFBundleDisplayName</key>
 	<string>ClickToFlash</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.clicktoflash</string>
+	<string>com.mattball.safari.clicktoflash</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>1.0</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -51,6 +51,8 @@
 			<string>All</string>
 		</dict>
 	</dict>
+	<key>Update Manifest URL</key>
+	<string>http://github.com/mattball/ClickToFlash-safari-extension/raw/master/version.plist</string>
 	<key>Website</key>
 	<string>http://github.com/mattball/ClickToFlash-safari-extension</string>
 </dict>
