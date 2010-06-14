@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Global HTML</title>
+		<script type="text/javascript">
+			function checkIfURLExists(event) {
+				var args = event.message;
+				var URL = args.url;
+				
+				var req = new XMLHttpRequest();
+				req.open("HEAD", URL, true);
+
+				req.onreadystatechange = function() {
+					if (req.readyState == 3) {
+						// XMLHttpRequest bug: If redirected from
+						// a HEAD request, it does a GET on the final
+						// destination.
+						
+						// We don't want to download the entire video,
+						// so this is a workaround that should
+						// hopefully work.
+						
+						// If we're downloading data, that means the
+						// video exists.
+						req.abort();
+					} else if (req.readyState == 4) {
+						args.exists = (req.status == 200 ? true : false);
+						event.target.page.dispatchMessage("getURLExists", args);
+					}
+				};
+				req.send(null);
+			}
+			
+			function respondToMessage(event) {
+				if (event.name == "checkIfURLExists") {
+					checkIfURLExists(event);
+				}
+			}
+			
+			safari.application.addEventListener("message", respondToMessage, false);
+		</script>
+	</head>
+	<body></body>
+<html>

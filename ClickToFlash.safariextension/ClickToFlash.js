@@ -1,10 +1,21 @@
 function ClickToFlash() {
 	this.elementMapping = new Array();
 	
+	this.videoElementMapping = new Array();
+	this.largeVideoElementMapping = new Array();
+	
 	var _this = this;
 	this.nodeInsertedTrampoline = function(event) {
 		_this.nodeInserted(event);
 	}
+	
+	this.respondToMessage = function(event) {
+		if (event.name == "getURLExists") {
+			_this.getURLExists(event);
+		}
+	}
+	
+	safari.self.addEventListener("message", this.respondToMessage, false);
 }
 
 ClickToFlash.prototype.nodeInserted = function(event) {
@@ -32,10 +43,17 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 		clickedElement = clickedElement.parentNode;
 	}
 	
-	var embedID = parseInt(clickedElement.id.replace("ClickToFlashPlaceholder", ""));
+	var elementID = parseInt(clickedElement.id.replace("ClickToFlashPlaceholder", ""));
 
-	var embedElement = this.elementMapping[embedID];
-	clickedElement.parentNode.replaceChild(embedElement, clickedElement);
+	var element = this.largeVideoElementMapping[elementID];
+	if (!element) {
+		element = this.videoElementMapping[elementID];
+	}
+	if (!element) {
+		element = this.elementMapping[elementID];
+	}
+	
+	clickedElement.parentNode.replaceChild(element, clickedElement);
 
 	setTimeout(this.startListening, 500);
 }
@@ -59,7 +77,14 @@ ClickToFlash.prototype.processYouTubeElement = function(element) {
 	// Check if there's an h264 version available
 	var h264URL = "http://www.youtube.com/get_video?fmt=18&video_id=" + videoID + "&t=" + videoHash;
 	var h264exists = true;
-
+	
+	var urlCheckArgs = new Object();
+	urlCheckArgs.elementID = element.elementID;
+	urlCheckArgs.url = h264URL;
+	urlCheckArgs.urlType = "normal";
+	
+	safari.self.tab.dispatchMessage("checkIfURLExists", urlCheckArgs);
+/*
 	if (h264exists) {
 		var videoURL = h264URL;
 
@@ -87,16 +112,14 @@ ClickToFlash.prototype.processYouTubeElement = function(element) {
 	} else {
 		// No h264 version available, so treat it like a normal element
 		this.processFlashElement(element); 
-	}
+	}*/
 }
 
 ClickToFlash.prototype.processFlashElement = function(element) {
 	// Check if it's already in the mapping dictionary
 	// If so, the user must have clicked it already
-	for (j = 0; j < this.elementMapping.length; j++) {
-		if (this.elementMapping[j] == element) {
-			continue;
-		}
+	if (this.elementMapping[element.elementID]) {
+		return;
 	}
 
 	var placeholderElement = document.createElement("div");
@@ -105,13 +128,13 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	placeholderElement.style.height = element.offsetHeight + "px";
 	placeholderElement.className = "clickToFlashPlaceholder";
 
-	var id = this.elementMapping.length;
+	var id = element.elementID;
 	this.elementMapping[id] = element;
 	placeholderElement.id = "ClickToFlashPlaceholder" + id;
 
 	var clickHandler = this;
 	placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
-
+	alert(element);
 	element.parentNode.replaceChild(placeholderElement, element);
 	
 	// Don't display the logo if the box is too small
@@ -146,6 +169,8 @@ ClickToFlash.prototype.removeFlash = function() {
 	
 	for (i = 0; i < flashElements.length; i++) {
 		var element = flashElements[i];
+		element.elementID = this.elementMapping.length;
+		this.processFlashElement(element);
 		
 		// Deal with h264 YouTube videos
 		var youTubeShouldUseH264 = true;
@@ -164,9 +189,80 @@ ClickToFlash.prototype.removeFlash = function() {
 				return;
 			}
 		}
-
-		this.processFlashElement(element);
 	}
 
 	this.startListening();
 }
+
+ClickToFlash.prototype.getURLExists = function(event) {
+	// If there's no elementMapping, then "this" isn't ClickToFlash
+	if (!this.elementMapping) {
+		return;
+	}
+	
+	var elementID = event.message.elementID;
+	var element = this.elementMapping[elementID];
+	if (!element)
+		return;
+		
+	var placeholderElement = document.getElementById("ClickToFlashPlaceholder" + elementID);
+		
+	if (event.message.exists) {
+		if (!this.videoElementMapping[elementID] && event.message.urlType == "normal") {
+			var flashvars = element.getAttribute("flashvars");
+
+			var videoElement = document.createElement("video");
+			videoElement.src = event.message.url;
+			videoElement.setAttribute("controls", "controls");
+			if (this.getFlashVariable(flashvars, "autoplay") == "1") {
+				videoElement.setAttribute("autoplay", "autoplay");
+			}
+			videoElement.style = placeholderElement.style;
+			videoElement.style.width = placeholderElement.offsetWidth + "px";
+			videoElement.style.height = placeholderElement.offsetHeight + "px";
+			this.videoElementMapping[elementID] = videoElement;
+			
+			// Change the placeholder text to "YouTube"
+			var placeholder = document.getElementById("ClickToFlashPlaceholder" + elementID);
+			var placeholderLogo = placeholder.firstChild.firstChild.firstChild;
+			placeholderLogo.innerHTML = "YouTube";
+
+			var shouldUseHDH264 = true;
+			if (shouldUseHDH264) {
+				var videoID = this.getFlashVariable(flashvars, "video_id");
+				var videoHash = this.getFlashVariable(flashvars, "t");
+
+				// Check if there's an h264 version available
+				var HDH264URL = "http://www.youtube.com/get_video?fmt=22&video_id=" + videoID + "&t=" + videoHash;
+
+				var urlCheckArgs = new Object();
+				urlCheckArgs.elementID = element.elementID;
+				urlCheckArgs.url = HDH264URL;
+				urlCheckArgs.urlType = "large";
+
+				safari.self.tab.dispatchMessage("checkIfURLExists", urlCheckArgs);
+			} else {
+				element.parentNode.replaceChild(videoElement, element);
+			}
+		} else if (!this.largeVideoElementMapping[elementID] && event.message.urlType == "large") {
+			var flashvars = element.getAttribute("flashvars");
+			
+			var videoElement = document.createElement("video");
+			videoElement.src = event.message.url;
+			videoElement.setAttribute("controls", "controls");
+			if (this.getFlashVariable(flashvars, "autoplay") == "1") {
+				videoElement.setAttribute("autoplay", "autoplay");
+			}
+			videoElement.style = placeholderElement.style;
+			videoElement.style.width = placeholderElement.offsetWidth + "px";
+			videoElement.style.height = placeholderElement.offsetHeight + "px";
+			this.largeVideoElementMapping[elementID] = videoElement;
+			
+			// Change the placeholder text to "YouTube"
+			var placeholder = document.getElementById("ClickToFlashPlaceholder" + elementID);
+			var placeholderLogo = placeholder.firstChild.firstChild.firstChild;
+			placeholderLogo.innerHTML = "YouTube HD";
+		}
+	}
+}
+
