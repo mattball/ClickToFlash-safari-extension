@@ -73,6 +73,10 @@ ClickToFlash.prototype.getFlashVariable = function(flashVars, key) {
 	return null;
 }
 
+ClickToFlash.prototype.isSIFRText = function(element) {
+	return (element.className == "sIFR-flash" || element.getAttribute("sifr"));
+}
+
 ClickToFlash.prototype.processYouTubeElement = function(element) {
 	if (!this.settings["useH264"]) {
 		return;
@@ -99,6 +103,16 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	// If so, the user must have clicked it already
 	if (this.elementMapping[element.elementID]) {
 		return;
+	}
+	
+	// Deal with sIFR first
+	if (this.isSIFRText(element)) {
+		var autoloadSIFR = this.settings["sifrReplacement"];
+		if (this.settings["sifrReplacement"] == "autoload") {
+			// Just stop processing. The flash movie will
+			// continue being loaded
+			return;
+		}
 	}
 
 	var placeholderElement = document.createElement("div");
@@ -139,8 +153,6 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		logoInsetElement.innerHTML = "Flash";
 		logoInsetElement.className = "logo inset";
 		logoContainer.appendChild(logoInsetElement);
-		
-		
 	}
 }
 
@@ -268,6 +280,7 @@ ClickToFlash.prototype.getSettings = function(event) {
 	this.settings = [];
 	this.settings["useH264"] = event.message.useH264;
 	this.settings["useLargeH264"] = event.message.useLargeH264;
+	this.settings["sifrReplacement"] = event.message.sifrReplacement;
 	
 	this.removeFlash();
 }

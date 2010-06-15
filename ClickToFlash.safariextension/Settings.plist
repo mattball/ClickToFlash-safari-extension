@@ -28,5 +28,29 @@
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
+	<dict>
+		<key>Type</key>
+		<string>Separator</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>normal</string>
+		<key>Key</key>
+		<string>sifrReplacement</string>
+		<key>Title</key>
+		<string>Text Replacement</string>
+		<key>Titles</key>
+		<array>
+			<string>Treat as regular Flash</string>
+			<string>Load automatically</string>
+		</array>
+		<key>Type</key>
+		<string>RadioButtons</string>
+		<key>Values</key>
+		<array>
+			<string>normal</string>
+			<string>autoload</string>
+		</array>
+	</dict>
 </array>
 </plist>
