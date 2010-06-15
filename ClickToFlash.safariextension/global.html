@@ -34,7 +34,7 @@
 			function getSettings(event) {
 				var settings = new Object();
 				settings.useH264 = safari.extension.settings["useH264"];
-				settings.useLargeH264 = safari.extension.settings["useLargeH264"];
+				settings.youTubeResolution = safari.extension.settings["youTubeResolution"];
 				settings.sifrReplacement = safari.extension.settings["sifrReplacement"];
 				
 				event.target.page.dispatchMessage("getSettings", settings);

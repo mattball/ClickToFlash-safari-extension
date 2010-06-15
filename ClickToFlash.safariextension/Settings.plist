@@ -20,13 +20,25 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<false/>
+		<string>360p</string>
 		<key>Key</key>
-		<string>useLargeH264</string>
+		<string>youTubeResolution</string>
 		<key>Title</key>
-		<string>Use Large Version if available</string>
+		<string>Max resolution to load</string>
+		<key>Titles</key>
+		<array>
+			<string>360p</string>
+			<string>720p</string>
+			<string>1080p</string>
+		</array>
 		<key>Type</key>
-		<string>CheckBox</string>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>360p</string>
+			<string>720p</string>
+			<string>1080p</string>
+		</array>
 	</dict>
 	<dict>
 		<key>Type</key>
