@@ -7,8 +7,11 @@
 				var args = event.message;
 				var URL = args.url;
 				
+				// We *should* be using a HEAD request, but XMLHttpRequest has
+				// a serious bug. Read below for details. Just use GET instead,
+				// since that's effectively what our HEAD would become.
 				var req = new XMLHttpRequest();
-				req.open("HEAD", URL, true);
+				req.open("GET", URL, true);
 
 				req.onreadystatechange = function() {
 					if (req.readyState == 3) {
@@ -52,4 +55,4 @@
 		</script>
 	</head>
 	<body></body>
-<html>
+</html>
