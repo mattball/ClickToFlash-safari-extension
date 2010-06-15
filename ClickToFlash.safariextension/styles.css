@@ -20,22 +20,33 @@
 	left: 50%;
 }
 
+.clickToFlashPlaceholder .logoContainer {
+	float: left !important;
+	position: relative !important;
+	left: -50% !important;
+}
+
 .clickToFlashPlaceholder .logo {
 	border-radius: 16.0px !important;
 	border: 8px solid rgba(0, 0, 0, 0.3) !important;
 	font-size: 40px !important;
 	width: auto !important;
-	color: rgba(0, 0, 0, 0.8) !important;
+	color: rgba(0, 0, 0, 0.5) !important;
 	font-weight: bold !important;
 	padding: 28px 10px 15px 10px !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
-	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
-	float: left;
+/*	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;*/
 	margin: 0 auto;
 	line-height: 0 !important;
-	float: left;
-	position: relative;
-	left: -50%;
+	
+	position: relative !important;
+}
+
+.clickToFlashPlaceholder .logo.inset {
+	color: rgba(255, 255, 255, 0.45) !important;
+	border-color: rgba(255, 255, 255, 0.45) !important;
+	position: absolute !important;
+	top: 1px;
 }

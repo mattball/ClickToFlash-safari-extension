@@ -126,10 +126,21 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		horizontalPositionElement.className = "logoHorizontalPosition";
 		verticalPositionElement.appendChild(horizontalPositionElement);
 
+		var logoContainer = document.createElement("div");
+		logoContainer.className = "logoContainer";
+		horizontalPositionElement.appendChild(logoContainer);
+		
 		var logoElement = document.createElement("div");
 		logoElement.innerHTML = "Flash";
 		logoElement.className = "logo";
-		horizontalPositionElement.appendChild(logoElement);
+		logoContainer.appendChild(logoElement);
+		
+		var logoInsetElement = document.createElement("div");
+		logoInsetElement.innerHTML = "Flash";
+		logoInsetElement.className = "logo inset";
+		logoContainer.appendChild(logoInsetElement);
+		
+		
 	}
 }
 
@@ -208,7 +219,9 @@ ClickToFlash.prototype.getURLExists = function(event) {
 			
 			// Change the placeholder text to "YouTube"
 			var placeholder = document.getElementById("ClickToFlashPlaceholder" + elementID);
-			var placeholderLogo = placeholder.firstChild.firstChild.firstChild;
+			var placeholderLogoInset = placeholder.firstChild.firstChild.firstChild.childNodes[0];
+			placeholderLogoInset.innerHTML = "YouTube";
+			var placeholderLogo = placeholder.firstChild.firstChild.firstChild.childNodes[1];
 			placeholderLogo.innerHTML = "YouTube";
 
 			if (this.settings["useLargeH264"]) {
@@ -243,7 +256,9 @@ ClickToFlash.prototype.getURLExists = function(event) {
 			
 			// Change the placeholder text to "YouTube"
 			var placeholder = document.getElementById("ClickToFlashPlaceholder" + elementID);
-			var placeholderLogo = placeholder.firstChild.firstChild.firstChild;
+			var placeholderLogoInset = placeholder.firstChild.firstChild.firstChild.childNodes[0];
+			placeholderLogoInset.innerHTML = "YouTube HD";
+			var placeholderLogo = placeholder.firstChild.firstChild.firstChild.childNodes[1];
 			placeholderLogo.innerHTML = "YouTube HD";
 		}
 	}
