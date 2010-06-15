@@ -3,6 +3,7 @@
 	border: 1px solid rgba(0, 0, 0, 0.5) !important;
 	-webkit-user-select: none !important;
 	display: table;
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .clickToFlashPlaceholder:active {
