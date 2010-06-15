@@ -7,7 +7,7 @@
      <dict>
        <key>CFBundleIdentifier</key>
        <string>com.mattball.safari.clicktoflash</string>
-       <key>Team Identifier</key>
+       <key>Developer Identifier</key>
        <string>P6UEBZPK7V</string>
        <key>CFBundleVersion</key>
        <string>1.0</string>
