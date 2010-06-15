@@ -134,29 +134,36 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 
 	element.parentNode.replaceChild(placeholderElement, element);
 	
-	// Don't display the logo if the box is too small
-	if (placeholderElement.offsetWidth > 100 && placeholderElement.offsetHeight > 50) {
-		var verticalPositionElement = document.createElement("div");
-		verticalPositionElement.className = "logoVerticalPosition";
-		placeholderElement.appendChild(verticalPositionElement);
+	var verticalPositionElement = document.createElement("div");
+	verticalPositionElement.className = "logoVerticalPosition";
+	placeholderElement.appendChild(verticalPositionElement);
 
-		var horizontalPositionElement = document.createElement("div");
-		horizontalPositionElement.className = "logoHorizontalPosition";
-		verticalPositionElement.appendChild(horizontalPositionElement);
+	var horizontalPositionElement = document.createElement("div");
+	horizontalPositionElement.className = "logoHorizontalPosition";
+	verticalPositionElement.appendChild(horizontalPositionElement);
 
-		var logoContainer = document.createElement("div");
-		logoContainer.className = "logoContainer";
-		horizontalPositionElement.appendChild(logoContainer);
-		
-		var logoElement = document.createElement("div");
-		logoElement.innerHTML = "Flash";
-		logoElement.className = "logo";
-		logoContainer.appendChild(logoElement);
-		
-		var logoInsetElement = document.createElement("div");
-		logoInsetElement.innerHTML = "Flash";
-		logoInsetElement.className = "logo inset";
-		logoContainer.appendChild(logoInsetElement);
+	var logoContainer = document.createElement("div");
+	logoContainer.className = "logoContainer";
+	horizontalPositionElement.appendChild(logoContainer);
+	
+	var logoElement = document.createElement("div");
+	logoElement.innerHTML = "Flash";
+	logoElement.className = "logo";
+	logoContainer.appendChild(logoElement);
+	
+	var logoInsetElement = document.createElement("div");
+	logoInsetElement.innerHTML = "Flash";
+	logoInsetElement.className = "logo inset";
+	logoContainer.appendChild(logoInsetElement);
+	
+	// If the badge is too big, try displaying it at half size
+	if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
+		logoContainer.className = "logoContainer mini";
+	}
+	
+	// If it's still too big, just hide it
+	if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
+		logoContainer.style.display = "none";
 	}
 }
 

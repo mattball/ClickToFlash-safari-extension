@@ -26,6 +26,13 @@
 	left: -50% !important;
 }
 
+.clickToFlashPlaceholder .logoContainer.mini .logo {
+	font-size: 20px !important;
+	border-width: 4px !important;
+	padding: 14px 5px 7px 5px !important;
+	border-radius: 8px !important;
+}
+
 .clickToFlashPlaceholder .logo {
 	border-radius: 16.0px !important;
 	border: 8px solid rgba(0, 0, 0, 0.3) !important;
@@ -33,11 +40,9 @@
 	width: auto !important;
 	color: rgba(0, 0, 0, 0.5) !important;
 	font-weight: bold !important;
-	padding: 28px 10px 15px 10px !important;
+	padding: 28px 10px 14px 10px !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
-/*	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) !important;*/
 	margin: 0 auto;
 	line-height: 0 !important;
 	
