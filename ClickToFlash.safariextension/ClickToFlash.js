@@ -13,9 +13,7 @@ function ClickToFlash() {
 	}
 	
 	this.respondToMessage = function(event) {
-		if (event.name == "getURLExists") {
-			_this.getURLExists(event);
-		} else if (event.name == "getSettings") {
+		if (event.name == "getSettings") {
 			_this.getSettings(event);
 		}
 	}
@@ -25,7 +23,10 @@ function ClickToFlash() {
 
 ClickToFlash.prototype.nodeInserted = function(event) {
 	if (event.target instanceof HTMLEmbedElement) {
-		this.removeFlash();
+		this.stopListening();
+		event.target.elementID = this.elementMapping.length;
+		this.processFlashElement(event.target);
+		setTimeout(this.startListening, 500);
 	}
 }
 
@@ -50,13 +51,7 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 	
 	var elementID = parseInt(clickedElement.id.replace("ClickToFlashPlaceholder", ""));
 
-	var element = this.videoElementMapping1080p[elementID];
-	if (!element) {
-		element = this.videoElementMapping720p[elementID];
-	}
-	if (!element) {
-		element = this.videoElementMapping[elementID];
-	}
+	var element = this.videoElementMapping[elementID];
 	if (!element) {
 		element = this.elementMapping[elementID];
 	}
@@ -86,20 +81,54 @@ ClickToFlash.prototype.processYouTubeElement = function(element) {
 		return;
 	}
 	
+	var elementID = element.elementID;
 	var flashvars = element.getAttribute("flashvars");
 	var videoID = this.getFlashVariable(flashvars, "video_id");
 	var videoHash = this.getFlashVariable(flashvars, "t");
+	var placeholderElement = document.getElementById("ClickToFlashPlaceholder" + elementID);
+	
+	var availableFormats = [];
+	var formatInfo = unescape(this.getFlashVariable(flashvars, "fmt_url_map")).split("|");
+	for (i = 0; i < formatInfo.length-1; i += 2) {
+		availableFormats[formatInfo[i]] = formatInfo[1+1];
+	}
+	if (!availableFormats[18]) {
+		// Format 18 (360p h264) tends not to be listed, but it
+		// should exist for every video. Just add it manually
+		// Hopefully 18 exists for every video, or this throws
+		// this whole thing out of whack
+		availableFormats[18] = "http://www.youtube.com/get_video?fmt=18&video_id=" + videoID + "&t=" + videoHash;
+	}
 
-	// Check if there's an h264 version available
-	var h264URL = "http://www.youtube.com/get_video?fmt=18&video_id=" + videoID + "&t=" + videoHash;
-	var h264exists = true;
+	// Get the highest-quality version <= the resolution set by the user
+	var format = 18;
+	var badgeLabel = "YouTube";
+	if (this.settings["youTubeResolution"] == "1080p" && availableFormats[37]) {
+		format = 37;
+		badgeLabel = "YouTube 1080p";
+	} else if ((this.settings["youTubeResolution"] == "1080p" || this.settings["youTubeResolution"] == "720p") && availableFormats[22]) {
+		format = 22;
+		badgeLabel = "YouTube 720p";
+	}
+	var videoURL = "http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoID + "&t=" + videoHash;
 	
-	var urlCheckArgs = new Object();
-	urlCheckArgs.elementID = element.elementID;
-	urlCheckArgs.url = h264URL;
-	urlCheckArgs.urlType = "380p";
+	// Create the video element
+	var videoElement = document.createElement("video");
+	videoElement.src = videoURL;
+	videoElement.setAttribute("controls", "controls");
+	if (this.getFlashVariable(flashvars, "autoplay") == "1") {
+		videoElement.setAttribute("autoplay", "autoplay");
+	}
+	videoElement.style = placeholderElement.style;
+	videoElement.style.width = placeholderElement.offsetWidth + "px";
+	videoElement.style.height = placeholderElement.offsetHeight + "px";
+	this.videoElementMapping[elementID] = videoElement;
 	
-	safari.self.tab.dispatchMessage("checkIfURLExists", urlCheckArgs);
+	// Change the placeholder text to "YouTube"
+	var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
+	placeholderLogoInset.innerHTML = badgeLabel;
+	var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
+	placeholderLogo.innerHTML = badgeLabel;
 }
 
 ClickToFlash.prototype.processFlashElement = function(element) {
@@ -165,6 +194,23 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
 		logoContainer.style.display = "none";
 	}
+	
+	// Deal with h264 YouTube videos
+	var youTubeShouldUseH264 = true;
+	if (youTubeShouldUseH264) {
+		var flashvars = element.getAttribute("flashvars");
+		var src = element.src;
+		var fromYouTube = (src && src.indexOf("youtube.com") != -1) ||
+		                  (src && src.indexOf("youtube-nocookie.com") != -1) ||
+		                  (src && src.indexOf("ytimg.com") != -1) ||
+		                  (flashvars && flashvars.indexOf("youtube.com") != -1) ||
+		                  (flashvars && flashvars.indexOf("youtube-nocookie.com") != -1) ||
+		                  (flashvars && flashvars.indexOf("ytimg.com") != -1);
+
+		if (fromYouTube) {
+			this.processYouTubeElement(element);
+		}
+	}
 }
 
 ClickToFlash.prototype.removeFlash = function() {
@@ -189,132 +235,9 @@ ClickToFlash.prototype.removeFlash = function() {
 		var element = flashElements[i];
 		element.elementID = this.elementMapping.length;
 		this.processFlashElement(element);
-		
-		// Deal with h264 YouTube videos
-		var youTubeShouldUseH264 = true;
-		if (youTubeShouldUseH264) {
-			var flashvars = element.getAttribute("flashvars");
-			var src = element.src;
-			var fromYouTube = (src && src.indexOf("youtube.com") != -1) ||
-			                  (src && src.indexOf("youtube-nocookie.com") != -1) ||
-			                  (src && src.indexOf("ytimg.com") != -1) ||
-			                  (flashvars && flashvars.indexOf("youtube.com") != -1) ||
-			                  (flashvars && flashvars.indexOf("youtube-nocookie.com") != -1) ||
-			                  (flashvars && flashvars.indexOf("ytimg.com") != -1);
-
-			if (fromYouTube) {
-				this.processYouTubeElement(element);
-				return;
-			}
-		}
 	}
 
 	this.startListening();
-}
-
-ClickToFlash.prototype.getURLExists = function(event) {
-	// If there's no elementMapping, then "this" isn't ClickToFlash
-	if (!this.elementMapping) {
-		return;
-	}
-	
-	var elementID = event.message.elementID;
-	var element = this.elementMapping[elementID];
-	if (!element)
-		return;
-		
-	var placeholderElement = document.getElementById("ClickToFlashPlaceholder" + elementID);
-		
-	if (event.message.exists) {
-		if (!this.videoElementMapping[elementID] && event.message.urlType == "380p") {
-			var flashvars = element.getAttribute("flashvars");
-
-			var videoElement = document.createElement("video");
-			videoElement.src = event.message.url;
-			videoElement.setAttribute("controls", "controls");
-			if (this.getFlashVariable(flashvars, "autoplay") == "1") {
-				videoElement.setAttribute("autoplay", "autoplay");
-			}
-			videoElement.style = placeholderElement.style;
-			videoElement.style.width = placeholderElement.offsetWidth + "px";
-			videoElement.style.height = placeholderElement.offsetHeight + "px";
-			this.videoElementMapping[elementID] = videoElement;
-			
-			// Change the placeholder text to "YouTube"
-			var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
-			placeholderLogoInset.innerHTML = "YouTube";
-			var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
-			placeholderLogo.innerHTML = "YouTube";
-
-			if (this.settings["youTubeResolution"] == "720p" || this.settings["youTubeResolution"] == "1080p") {
-				var videoID = this.getFlashVariable(flashvars, "video_id");
-				var videoHash = this.getFlashVariable(flashvars, "t");
-
-				// Check if there's an h264 version available
-				var HDH264URL = "http://www.youtube.com/get_video?fmt=22&video_id=" + videoID + "&t=" + videoHash;
-
-				var urlCheckArgs = new Object();
-				urlCheckArgs.elementID = element.elementID;
-				urlCheckArgs.url = HDH264URL;
-				urlCheckArgs.urlType = "720p";
-
-				safari.self.tab.dispatchMessage("checkIfURLExists", urlCheckArgs);
-			}
-		} else if (!this.videoElementMapping720p[elementID] && event.message.urlType == "720p") {
-			var flashvars = element.getAttribute("flashvars");
-			
-			var videoElement = document.createElement("video");
-			videoElement.src = event.message.url;
-			videoElement.setAttribute("controls", "controls");
-			if (this.getFlashVariable(flashvars, "autoplay") == "1") {
-				videoElement.setAttribute("autoplay", "autoplay");
-			}
-			videoElement.style = placeholderElement.style;
-			videoElement.style.width = placeholderElement.offsetWidth + "px";
-			videoElement.style.height = placeholderElement.offsetHeight + "px";
-			this.videoElementMapping720p[elementID] = videoElement;
-			
-			// Change the placeholder text to "YouTube"
-			var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
-			placeholderLogoInset.innerHTML = "YouTube 720p";
-			var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
-			placeholderLogo.innerHTML = "YouTube 720p";
-			
-			if (this.settings["youTubeResolution"] == "1080p") {
-				var videoID = this.getFlashVariable(flashvars, "video_id");
-				var videoHash = this.getFlashVariable(flashvars, "t");
-
-				// Check if there's an h264 version available
-				var HDH264URL = "http://www.youtube.com/get_video?fmt=37&video_id=" + videoID + "&t=" + videoHash;
-
-				var urlCheckArgs = new Object();
-				urlCheckArgs.elementID = element.elementID;
-				urlCheckArgs.url = HDH264URL;
-				urlCheckArgs.urlType = "1080p";
-
-				safari.self.tab.dispatchMessage("checkIfURLExists", urlCheckArgs);
-			}
-		} else if (!this.videoElementMapping1080p[elementID] && event.message.urlType == "1080p") {
-			var flashvars = element.getAttribute("flashvars");
-
-			var videoElement = document.createElement("video");
-			videoElement.src = event.message.url;
-			videoElement.setAttribute("controls", "controls");
-			if (this.getFlashVariable(flashvars, "autoplay") == "1") {
-				videoElement.setAttribute("autoplay", "autoplay");
-			}
-			videoElement.style = placeholderElement.style;
-			videoElement.style.width = placeholderElement.offsetWidth + "px";
-			videoElement.style.height = placeholderElement.offsetHeight + "px";
-			this.videoElementMapping1080p[elementID] = videoElement;
-
-			// Change the placeholder text to "YouTube"
-			var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
-			placeholderLogoInset.innerHTML = "YouTube 1080p";
-			var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
-			placeholderLogo.innerHTML = "YouTube 1080p";
-		}
-	}
 }
 
 ClickToFlash.prototype.getSettings = function(event) {
