@@ -3,18 +3,22 @@
 	<head>
 		<title>Global HTML</title>
 		<script type="text/javascript">
-			function getSettings(event) {
+			function getSettings() {
 				var settings = new Object();
 				settings.useH264 = safari.extension.settings["useH264"];
 				settings.youTubeResolution = safari.extension.settings["youTubeResolution"];
 				settings.sifrReplacement = safari.extension.settings["sifrReplacement"];
-				
-				event.target.page.dispatchMessage("getSettings", settings);
+				return settings;
 			}
 			
 			function respondToMessage(event) {
 				if (event.name == "getSettings") {
 					getSettings(event);
+				} else if (event.name == "canLoad") {
+					var data = event.message;
+					if (data == "getSettings") {
+						event.message = getSettings();
+					}
 				}
 			}
 			

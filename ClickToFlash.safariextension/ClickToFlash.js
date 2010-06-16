@@ -1,48 +1,40 @@
 function ClickToFlash() {
 	this.elementMapping = new Array();
-	
 	this.videoElementMapping = new Array();
-	this.videoElementMapping720p = new Array();
-	this.videoElementMapping1080p = new Array();
 	
 	this.settings = null;
 	
-	var _this = this;
-	this.nodeInsertedTrampoline = function(event) {
-		_this.nodeInserted(event);
-	}
-	
+	var _this = this;	
 	this.respondToMessage = function(event) {
 		if (event.name == "getSettings") {
 			_this.getSettings(event);
 		}
 	}
 	
+	this.handleBeforeLoadEventTrampoline = function(event) {
+		_this.handleBeforeLoadEvent(event);
+	}
+	
 	safari.self.addEventListener("message", this.respondToMessage, false);
+	document.addEventListener("beforeload", this.handleBeforeLoadEventTrampoline, true);
 }
 
-ClickToFlash.prototype.nodeInserted = function(event) {
-	if (event.target instanceof HTMLEmbedElement) {
-		this.stopListening();
-		event.target.elementID = this.elementMapping.length;
-		this.processFlashElement(event.target);
-		setTimeout(this.startListening, 500);
+ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
+	const element = event.target;
+	
+	if (element instanceof HTMLEmbedElement || element instanceof HTMLObjectElement) {
+		if (element.allowedToLoad)
+			return;
+			
+		element.elementID = this.elementMapping.length;
+		this.settings = safari.self.tab.canLoad(event, "getSettings");
+			
+		event.preventDefault();
+		this.processFlashElement(element);
 	}
 }
 
-ClickToFlash.prototype.startListening = function() {
-	document.addEventListener("DOMNodeInserted", this.nodeInsertedTrampoline, false);
-}
-
-ClickToFlash.prototype.stopListening = function() {
-	document.removeEventListener("DOMNodeInserted", this.nodeInsertedTrampoline, false);
-}
-
 ClickToFlash.prototype.clickPlaceholder = function(event) {
-	// Temporarily disable watching the DOM
-	// Otherwise, we'll trigger ourselves by adding the <embed>
-	this.stopListening();
-	
 	var clickedElement = event.target;
 	
 	while (clickedElement.className != "clickToFlashPlaceholder") {
@@ -54,11 +46,10 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 	var element = this.videoElementMapping[elementID];
 	if (!element) {
 		element = this.elementMapping[elementID];
+		element.allowedToLoad = true;
 	}
 	
 	clickedElement.parentNode.replaceChild(element, clickedElement);
-
-	setTimeout(this.startListening, 500);
 }
 
 ClickToFlash.prototype.getFlashVariable = function(flashVars, key) {
@@ -211,40 +202,4 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 			this.processYouTubeElement(element);
 		}
 	}
-}
-
-ClickToFlash.prototype.removeFlash = function() {
-	this.stopListening();
-	
-	var embedElements = document.getElementsByTagName("embed");
-	var objectElements = document.getElementsByTagName("object");
-	var flashElements = [];
-	for (i = 0; i < objectElements.length; i++) {
-		flashElements[flashElements.length] = objectElements[i];
-	}
-	for (i = 0; i < embedElements.length; i++) {
-		flashElements[flashElements.length] = embedElements[i];
-	}
-	
-	for (i = 0; i < flashElements.length; i++) {
-		if (!this.settings) {
-			safari.self.tab.dispatchMessage("getSettings", null);
-			return;
-		}
-		
-		var element = flashElements[i];
-		element.elementID = this.elementMapping.length;
-		this.processFlashElement(element);
-	}
-
-	this.startListening();
-}
-
-ClickToFlash.prototype.getSettings = function(event) {
-	this.settings = [];
-	this.settings["useH264"] = event.message.useH264;
-	this.settings["youTubeResolution"] = event.message.youTubeResolution;
-	this.settings["sifrReplacement"] = event.message.sifrReplacement;
-	
-	this.removeFlash();
 }
