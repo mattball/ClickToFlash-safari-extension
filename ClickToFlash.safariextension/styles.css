@@ -2,8 +2,8 @@
 	background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.15)), to(rgba(0, 0, 0, 0.15))) !important;
 	border: 1px solid rgba(0, 0, 0, 0.5) !important;
 	-webkit-user-select: none !important;
-	display: table;
-	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	display: table !important;
+	font-family: "Helvetica Neue", Helvetica, sans-serif !important;
 }
 
 .clickToFlashPlaceholder:active {
@@ -16,9 +16,9 @@
 }
 
 .logoHorizontalPosition {
-	float: left;
-	position: relative;
-	left: 50%;
+	float: left !important;
+	position: relative !important;
+	left: 50% !important;
 }
 
 .clickToFlashPlaceholder .logoContainer {
@@ -54,5 +54,5 @@
 	color: rgba(255, 255, 255, 0.45) !important;
 	border-color: rgba(255, 255, 255, 0.45) !important;
 	position: absolute !important;
-	top: 1px;
+	top: 1px !important;
 }
