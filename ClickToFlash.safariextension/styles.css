@@ -46,6 +46,7 @@
 	cursor: default !important;
 	margin: 0 auto;
 	line-height: 0 !important;
+	background: none !important;
 	
 	position: relative !important;
 }
