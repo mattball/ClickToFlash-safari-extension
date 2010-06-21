@@ -152,7 +152,9 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	var clickHandler = this;
 	placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
 
-	element.parentNode.replaceChild(placeholderElement, element);
+	if (element.parentNode) {
+		element.parentNode.replaceChild(placeholderElement, element);
+	}
 	
 	var verticalPositionElement = document.createElement("div");
 	verticalPositionElement.className = "logoVerticalPosition";
@@ -203,3 +205,5 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		}
 	}
 }
+
+var CTF = new ClickToFlash();

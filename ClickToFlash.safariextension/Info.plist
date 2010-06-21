@@ -23,10 +23,6 @@
 	<dict>
 		<key>Scripts</key>
 		<dict>
-			<key>End</key>
-			<array>
-				<string>load.js</string>
-			</array>
 			<key>Start</key>
 			<array>
 				<string>ClickToFlash.js</string>
