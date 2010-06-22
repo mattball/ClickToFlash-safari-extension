@@ -122,7 +122,64 @@ ClickToFlash.prototype.processYouTubeElement = function(element) {
 	videoElement.style.height = placeholderElement.offsetHeight + "px";
 	this.videoElementMapping[elementID] = videoElement;
 	
-	// Change the placeholder text to "YouTube"
+	// Change the placeholder text
+	var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
+	placeholderLogoInset.innerHTML = badgeLabel;
+	var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
+	placeholderLogo.innerHTML = badgeLabel;
+}
+
+ClickToFlash.prototype.processDailyMotionElement = function(element) {
+	if (!this.settings["useH264"]) {
+		return;
+	}
+	
+	var elementID = element.elementID;
+	var flashvars = element.getAttribute("flashvars");
+	var placeholderElement = document.getElementById("ClickToFlashPlaceholder" + elementID);
+
+	var h264URL = null;
+	var hqH264URL = null;
+
+	var sequence = unescape(this.getFlashVariable(flashvars, "sequence"));
+	var vars = sequence.split("\",\"");
+	for (i = 0; i < vars.length; i++) {
+		if (vars[i].indexOf("hqURL") != -1) {
+			var keyValuePair = vars[i].split("\":\"");
+			h264URL = keyValuePair[1].split("\"")[0];
+			while (h264URL.indexOf("\\/") != -1) {
+				h264URL = h264URL.replace("\\/", "/");
+			}
+		} else if (vars[i].indexOf("hdURL") != -1) {
+			var keyValuePair = vars[i].split("\":\"");
+			hqH264URL = keyValuePair[1].split("\"")[0];
+			while (hqH264URL.indexOf("\\/") != -1) {
+				hqH264URL = hqH264URL.replace("\\/", "/");
+			}
+		}
+	}
+	
+	var videoElementURL = h264URL;
+	var badgeLabel = "DailyMotion";
+	if ((this.settings["youTubeResolution"] == "720p" || this.settings["youTubeResolution"] == "1080p") && hqH264URL) {
+		videoElementURL = hqH264URL;
+		badgeLabel = "DailyMotion HD";
+	}
+	
+	if (!videoElementURL) {
+		return;
+	}
+	
+	// Create the video element
+	var videoElement = document.createElement("video");
+	videoElement.src = videoElementURL;
+	videoElement.setAttribute("controls", "controls");
+	videoElement.style = placeholderElement.style;
+	videoElement.style.width = placeholderElement.offsetWidth + "px";
+	videoElement.style.height = placeholderElement.offsetHeight + "px";
+	this.videoElementMapping[elementID] = videoElement;
+	
+	// Change the placeholder text
 	var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
 	placeholderLogoInset.innerHTML = badgeLabel;
 	var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
@@ -204,21 +261,21 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	};
 	badgeHide();
 	
-	// Deal with h264 YouTube videos
-	var youTubeShouldUseH264 = true;
-	if (youTubeShouldUseH264) {
-		var flashvars = element.getAttribute("flashvars");
-		var src = element.src;
-		var fromYouTube = (src && src.indexOf("youtube.com") != -1) ||
-		                  (src && src.indexOf("youtube-nocookie.com") != -1) ||
-		                  (src && src.indexOf("ytimg.com") != -1) ||
-		                  (flashvars && flashvars.indexOf("youtube.com") != -1) ||
-		                  (flashvars && flashvars.indexOf("youtube-nocookie.com") != -1) ||
-		                  (flashvars && flashvars.indexOf("ytimg.com") != -1);
-
-		if (fromYouTube) {
-			this.processYouTubeElement(element);
-		}
+	// Deal with h264 videos
+	var flashvars = element.getAttribute("flashvars");
+	var src = element.src;
+	var fromYouTube = (src && src.indexOf("youtube.com") != -1) ||
+	                  (src && src.indexOf("youtube-nocookie.com") != -1) ||
+	                  (src && src.indexOf("ytimg.com") != -1) ||
+	                  (flashvars && flashvars.indexOf("youtube.com") != -1) ||
+	                  (flashvars && flashvars.indexOf("youtube-nocookie.com") != -1) ||
+	                  (flashvars && flashvars.indexOf("ytimg.com") != -1);
+	var fromDailyMotion = (src && src.indexOf("dailymotion.com") != -1) ||
+	                      (flashvars && flashvars.indexOf("dailymotion.com") != -1);
+	if (fromYouTube) {
+		this.processYouTubeElement(element);
+	} else if (fromDailyMotion) {
+		this.processDailyMotionElement(element);
 	}
 }
 
