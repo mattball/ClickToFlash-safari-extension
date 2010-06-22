@@ -4,7 +4,7 @@
 <array>
 	<dict>
 		<key>Title</key>
-		<string>YouTube</string>
+		<string>Alternative Sources</string>
 		<key>Type</key>
 		<string>Group</string>
 	</dict>
@@ -20,11 +20,11 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>360p</string>
+		<false/>
 		<key>Key</key>
-		<string>youTubeResolution</string>
+		<string>useHDH264</string>
 		<key>Title</key>
-		<string>Max resolution to load</string>
+		<string>Use high-resolution version if available</string>
 		<key>Titles</key>
 		<array>
 			<string>360p</string>
@@ -32,7 +32,7 @@
 			<string>1080p</string>
 		</array>
 		<key>Type</key>
-		<string>PopUpButton</string>
+		<string>CheckBox</string>
 		<key>Values</key>
 		<array>
 			<string>360p</string>

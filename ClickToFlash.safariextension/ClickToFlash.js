@@ -98,15 +98,15 @@ ClickToFlash.prototype.processYouTubeElement = function(element) {
 		availableFormats[18] = "http://www.youtube.com/get_video?fmt=18&video_id=" + videoID + "&t=" + videoHash;
 	}
 
-	// Get the highest-quality version <= the resolution set by the user
+	// Get the highest-quality version set by the user
 	var format = 18;
 	var badgeLabel = "YouTube";
-	if (this.settings["youTubeResolution"] == "1080p" && availableFormats[37]) {
+	if (this.settings["useHDH264"] && availableFormats[37]) {
 		format = 37;
-		badgeLabel = "YouTube 1080p";
-	} else if ((this.settings["youTubeResolution"] == "1080p" || this.settings["youTubeResolution"] == "720p") && availableFormats[22]) {
+		badgeLabel = "YouTube HD";
+	} else if (this.settings["useHDH264"] && availableFormats[22]) {
 		format = 22;
-		badgeLabel = "YouTube 720p";
+		badgeLabel = "YouTube HD";
 	}
 	var videoURL = "http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoID + "&t=" + videoHash;
 	
@@ -161,7 +161,7 @@ ClickToFlash.prototype.processDailyMotionElement = function(element) {
 	
 	var videoElementURL = h264URL;
 	var badgeLabel = "DailyMotion";
-	if ((this.settings["youTubeResolution"] == "720p" || this.settings["youTubeResolution"] == "1080p") && hqH264URL) {
+	if ((this.settings["useHDH264"]) && hqH264URL) {
 		videoElementURL = hqH264URL;
 		badgeLabel = "DailyMotion HD";
 	}
