@@ -15,8 +15,15 @@ function ClickToFlash() {
 		_this.handleBeforeLoadEvent(event);
 	}
 	
+	this.nodeInsertedTrampoline = function(event) {
+		if (event.target.className == "ClickToFlashPlaceholder") {
+			alert("Resize");
+		}
+	}
+	
 	safari.self.addEventListener("message", this.respondToMessage, false);
 	document.addEventListener("beforeload", this.handleBeforeLoadEventTrampoline, true);
+	document.addEventListener("DOMNodeInsertedIntoDocument", this.nodeInsertedTrampoline, true);
 }
 
 ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
@@ -144,7 +151,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	placeholderElement.style.width = element.offsetWidth + "px";
 	placeholderElement.style.height = element.offsetHeight + "px";
 	placeholderElement.className = "clickToFlashPlaceholder";
-
+	
 	var id = element.elementID;
 	this.elementMapping[id] = element;
 	placeholderElement.id = "ClickToFlashPlaceholder" + id;
@@ -178,15 +185,24 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	logoInsetElement.className = "logo inset";
 	logoContainer.appendChild(logoInsetElement);
 	
-	// If the badge is too big, try displaying it at half size
-	if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
-		logoContainer.className = "logoContainer mini";
-	}
-	
-	// If it's still too big, just hide it
-	if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
-		logoContainer.style.display = "none";
-	}
+	// Wait until the placeholder has a width and height, then
+	// check if we should minify or hide the badge
+	var badgeHide = function() {
+		if (placeholderElement.offsetWidth > 0 && logoElement.offsetWidth > 0 && placeholderElement.offsetHeight > 0 && logoElement.offsetHeight > 0) {
+			// If the badge is too big, try displaying it at half size
+			if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
+				logoContainer.className = "logoContainer mini";
+			}
+
+			// If it's still too big, just hide it
+			if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
+				logoContainer.style.display = "none";
+			}
+		} else {
+			setTimeout(badgeHide, 100);
+		}
+	};
+	badgeHide();
 	
 	// Deal with h264 YouTube videos
 	var youTubeShouldUseH264 = true;
