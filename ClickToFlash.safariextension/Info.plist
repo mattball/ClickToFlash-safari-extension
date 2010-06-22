@@ -25,6 +25,9 @@
 		<dict>
 			<key>Start</key>
 			<array>
+				<string>killers/Killer.js</string>
+				<string>killers/YouTubeKiller.js</string>
+				<string>killers/DailyMotionKiller.js</string>
 				<string>ClickToFlash.js</string>
 			</array>
 		</dict>

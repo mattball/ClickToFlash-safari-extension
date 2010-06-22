@@ -2,6 +2,8 @@ function ClickToFlash() {
 	this.elementMapping = new Array();
 	this.videoElementMapping = new Array();
 	
+	this.killers = [];
+	
 	this.settings = null;
 	
 	var _this = this;	
@@ -15,15 +17,8 @@ function ClickToFlash() {
 		_this.handleBeforeLoadEvent(event);
 	}
 	
-	this.nodeInsertedTrampoline = function(event) {
-		if (event.target.className == "ClickToFlashPlaceholder") {
-			alert("Resize");
-		}
-	}
-	
 	safari.self.addEventListener("message", this.respondToMessage, false);
 	document.addEventListener("beforeload", this.handleBeforeLoadEventTrampoline, true);
-	document.addEventListener("DOMNodeInsertedIntoDocument", this.nodeInsertedTrampoline, true);
 }
 
 ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
@@ -59,131 +54,8 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 	clickedElement.parentNode.replaceChild(element, clickedElement);
 }
 
-ClickToFlash.prototype.getFlashVariable = function(flashVars, key) {
-	var vars = flashVars.split("&");
-	for (var i=0; i < vars.length; i++) {
-		var keyValuePair = vars[i].split("=");
-		if (keyValuePair[0] == key) {
-			return keyValuePair[1];
-		}
-	}
-	return null;
-}
-
 ClickToFlash.prototype.isSIFRText = function(element) {
 	return (element.className == "sIFR-flash" || element.getAttribute("sifr"));
-}
-
-ClickToFlash.prototype.processYouTubeElement = function(element) {
-	if (!this.settings["useH264"]) {
-		return;
-	}
-	
-	var elementID = element.elementID;
-	var flashvars = element.getAttribute("flashvars");
-	var videoID = this.getFlashVariable(flashvars, "video_id");
-	var videoHash = this.getFlashVariable(flashvars, "t");
-	var placeholderElement = document.getElementById("ClickToFlashPlaceholder" + elementID);
-	
-	var availableFormats = [];
-	var formatInfo = unescape(this.getFlashVariable(flashvars, "fmt_url_map")).split("|");
-	for (i = 0; i < formatInfo.length-1; i += 2) {
-		availableFormats[formatInfo[i]] = formatInfo[1+1];
-	}
-	if (!availableFormats[18]) {
-		// Format 18 (360p h264) tends not to be listed, but it
-		// should exist for every video. Just add it manually
-		// Hopefully 18 exists for every video, or this throws
-		// this whole thing out of whack
-		availableFormats[18] = "http://www.youtube.com/get_video?fmt=18&video_id=" + videoID + "&t=" + videoHash;
-	}
-
-	// Get the highest-quality version set by the user
-	var format = 18;
-	var badgeLabel = "YouTube";
-	if (this.settings["useHDH264"] && availableFormats[37]) {
-		format = 37;
-		badgeLabel = "YouTube HD";
-	} else if (this.settings["useHDH264"] && availableFormats[22]) {
-		format = 22;
-		badgeLabel = "YouTube HD";
-	}
-	var videoURL = "http://www.youtube.com/get_video?fmt=" + format + "&video_id=" + videoID + "&t=" + videoHash;
-	
-	// Create the video element
-	var videoElement = document.createElement("video");
-	videoElement.src = videoURL;
-	videoElement.setAttribute("controls", "controls");
-	if (this.getFlashVariable(flashvars, "autoplay") == "1") {
-		videoElement.setAttribute("autoplay", "autoplay");
-	}
-	videoElement.style = placeholderElement.style;
-	videoElement.style.width = placeholderElement.offsetWidth + "px";
-	videoElement.style.height = placeholderElement.offsetHeight + "px";
-	this.videoElementMapping[elementID] = videoElement;
-	
-	// Change the placeholder text
-	var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
-	placeholderLogoInset.innerHTML = badgeLabel;
-	var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
-	placeholderLogo.innerHTML = badgeLabel;
-}
-
-ClickToFlash.prototype.processDailyMotionElement = function(element) {
-	if (!this.settings["useH264"]) {
-		return;
-	}
-	
-	var elementID = element.elementID;
-	var flashvars = element.getAttribute("flashvars");
-	var placeholderElement = document.getElementById("ClickToFlashPlaceholder" + elementID);
-
-	var h264URL = null;
-	var hqH264URL = null;
-
-	var sequence = unescape(this.getFlashVariable(flashvars, "sequence"));
-	var vars = sequence.split("\",\"");
-	for (i = 0; i < vars.length; i++) {
-		if (vars[i].indexOf("hqURL") != -1) {
-			var keyValuePair = vars[i].split("\":\"");
-			h264URL = keyValuePair[1].split("\"")[0];
-			while (h264URL.indexOf("\\/") != -1) {
-				h264URL = h264URL.replace("\\/", "/");
-			}
-		} else if (vars[i].indexOf("hdURL") != -1) {
-			var keyValuePair = vars[i].split("\":\"");
-			hqH264URL = keyValuePair[1].split("\"")[0];
-			while (hqH264URL.indexOf("\\/") != -1) {
-				hqH264URL = hqH264URL.replace("\\/", "/");
-			}
-		}
-	}
-	
-	var videoElementURL = h264URL;
-	var badgeLabel = "DailyMotion";
-	if ((this.settings["useHDH264"]) && hqH264URL) {
-		videoElementURL = hqH264URL;
-		badgeLabel = "DailyMotion HD";
-	}
-	
-	if (!videoElementURL) {
-		return;
-	}
-	
-	// Create the video element
-	var videoElement = document.createElement("video");
-	videoElement.src = videoElementURL;
-	videoElement.setAttribute("controls", "controls");
-	videoElement.style = placeholderElement.style;
-	videoElement.style.width = placeholderElement.offsetWidth + "px";
-	videoElement.style.height = placeholderElement.offsetHeight + "px";
-	this.videoElementMapping[elementID] = videoElement;
-	
-	// Change the placeholder text
-	var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
-	placeholderLogoInset.innerHTML = badgeLabel;
-	var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
-	placeholderLogo.innerHTML = badgeLabel;
 }
 
 ClickToFlash.prototype.processFlashElement = function(element) {
@@ -261,22 +133,90 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	};
 	badgeHide();
 	
+	if (!this.settings["useH264"]) {
+		return;
+	}
+	
 	// Deal with h264 videos
 	var flashvars = element.getAttribute("flashvars");
 	var src = element.src;
-	var fromYouTube = (src && src.indexOf("youtube.com") != -1) ||
-	                  (src && src.indexOf("youtube-nocookie.com") != -1) ||
-	                  (src && src.indexOf("ytimg.com") != -1) ||
-	                  (flashvars && flashvars.indexOf("youtube.com") != -1) ||
-	                  (flashvars && flashvars.indexOf("youtube-nocookie.com") != -1) ||
-	                  (flashvars && flashvars.indexOf("ytimg.com") != -1);
-	var fromDailyMotion = (src && src.indexOf("dailymotion.com") != -1) ||
-	                      (flashvars && flashvars.indexOf("dailymotion.com") != -1);
-	if (fromYouTube) {
-		this.processYouTubeElement(element);
-	} else if (fromDailyMotion) {
-		this.processDailyMotionElement(element);
+	
+	// This is hacky, but it's an easy way to convert the possibly-relative
+	// src URL into an absolute one
+	var tempAnchor = document.createElement("a");
+	tempAnchor.href = src;
+	src = tempAnchor.href;
+	tempAnchor = null;
+	
+	for (i = 0; i < this.killers.length; i++) {
+		var currentKiller = this.killers[i];
+		var matches = false;
+		
+		for (j = 0; !matches && j < currentKiller.sourcePatterns.length; j++) {
+			var currentPattern = currentKiller.sourcePatterns[j];
+			if (src.match(currentPattern)) {
+				matches = true;
+			}
+		}
+		
+		for (j = 0; !matches && j < currentKiller.flashVarsPatterns.length; j++) {
+			var currentPattern = currentKiller.flashVarsPatterns[j];
+			if (src.match(currentPattern)) {
+				matches = true;
+			}
+		}
+		
+		if (matches) {
+			var shouldUseHD = this.settings["useHDH264"];
+			var videoMapping = this.videoElementMapping;
+			var killerCallback = function(sender, element, videoURL, hdVideoURL) {
+				var videoElementURL = null;
+				var badgeLabel = null;
+				
+				if (shouldUseHD && hdVideoURL) {
+					videoElementURL = hdVideoURL;
+					badgeLabel = sender.hdBadgeLabel;
+				}  else if (videoURL) {
+					videoElementURL = videoURL;
+					badgeLabel = sender.badgeLabel;
+				}
+				
+				var elementID = element.elementID;
+				
+				// Create the video element
+				var videoElement = document.createElement("video");
+				videoElement.src = videoElementURL;
+				videoElement.setAttribute("controls", "controls");
+				if (getFlashVariable(flashvars, "autoplay") == "1") {
+					videoElement.setAttribute("autoplay", "autoplay");
+				}
+				videoElement.style = placeholderElement.style;
+				videoElement.style.width = placeholderElement.offsetWidth + "px";
+				videoElement.style.height = placeholderElement.offsetHeight + "px";
+				videoMapping[elementID] = videoElement;
+				
+				// Change the placeholder text
+				var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
+				placeholderLogoInset.innerHTML = badgeLabel;
+				var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
+				placeholderLogo.innerHTML = badgeLabel;
+			};
+			currentKiller.processElement(element, killerCallback);
+			break;
+		}
 	}
 }
 
+getFlashVariable = function(flashVars, key) {
+	var vars = flashVars.split("&");
+	for (var i=0; i < vars.length; i++) {
+		var keyValuePair = vars[i].split("=");
+		if (keyValuePair[0] == key) {
+			return keyValuePair[1];
+		}
+	}
+	return null;
+}
+
 var CTF = new ClickToFlash();
+CTF.killers = [new YouTubeKiller(), new DailyMotionKiller()];
