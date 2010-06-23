@@ -50,7 +50,7 @@
 	padding: 28px 10px 14px 10px !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
-	margin: 0 auto;
+	margin: 0 auto !important;
 	line-height: 0 !important;
 	background: none !important;
 	position: relative !important;
@@ -62,4 +62,67 @@
 	border-color: rgba(255, 255, 255, 0.45) !important;
 	position: absolute !important;
 	top: 1px !important;
+}
+
+.clickToFlashPlaceholder .actionButton {
+	position: absolute !important;
+	left: 4px !important;
+	top: 4px !important;
+	width: 22px !important;
+	height: 22px !important;
+	background-color: rgba(255, 255, 255, 0.45) !important;
+	background-image: url("actionButton.png") !important;
+	background-size: 18px !important;
+	background-repeat: no-repeat !important;
+	background-position: center !important;
+	border-radius: 11px !important;
+	opacity: 0.0 !important;
+	-webkit-transition-property: opacity;
+	-webkit-transition-duration: 0.25s;
+	border: 0 !important;
+	z-index: 2 !important;
+}
+
+.clickToFlashPlaceholder:hover .actionButton {
+	opacity: 1.0 !important;
+}
+
+.clickToFlashPlaceholder .contextMenu {
+	position: absolute !important;
+	left: 18px !important;
+	top: 18px !important;
+	background-color: rgba(255, 255, 255, 0.9) !important;
+	-webkit-user-select: none !important;
+	color: #000 !important;
+	font-size: 14px !important;
+	z-index: 3 !important;
+	-webkit-box-shadow: 0 2px 5px #222 !important;
+	list-style: none !important;
+	margin: 0 !important;
+	border-radius: 4px !important;
+	padding: 4px 0 !important;
+	-webkit-transition-property: opacity;
+	-webkit-transition-duration: 0.15s;
+}
+
+.clickToFlashPlaceholder .contextMenu li.menuItem {
+	padding: 2px 16px !important;
+	-webkit-user-select: none !important;
+	cursor: default !important;
+	font-weight: normal !important;
+	font-family: "Lucida Grande", Helvetica, sans-serif !important;
+	text-align: left !important;
+}
+
+.clickToFlashPlaceholder .contextMenu li.separator {
+	height: 0 !important;
+	padding: 0 !important;
+	margin: 3px 0 2px 0 !important;
+	border-top: 1px solid rgba(0, 0, 0, 0.3) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.clickToFlashPlaceholder .contextMenu li:hover {
+	background: -webkit-gradient(linear, left top, left bottom, from(rgb(94, 121, 253)), to(rgb(29, 60, 252))) !important;
+	color: #fff !important;
 }

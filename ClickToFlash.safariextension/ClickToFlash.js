@@ -11,11 +11,15 @@ function ClickToFlash() {
 		if (event.name == "getSettings") {
 			_this.getSettings(event);
 		}
-	}
+	};
 	
 	this.handleBeforeLoadEventTrampoline = function(event) {
 		_this.handleBeforeLoadEvent(event);
-	}
+	};
+	
+	this.openActionMenuTrampoline = function(event) {
+		_this.openActionMenu(event);
+	};
 	
 	safari.self.addEventListener("message", this.respondToMessage, false);
 	document.addEventListener("beforeload", this.handleBeforeLoadEventTrampoline, true);
@@ -34,10 +38,68 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 		event.preventDefault();
 		this.processFlashElement(element);
 	}
-}
+};
+
+ClickToFlash.prototype.openActionMenu = function(event) {
+	var placeholderElement = event.target.parentNode;
+	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
+	
+	var origThis = this;
+	
+	var menuElement = document.createElement("menu");
+	menuElement.className = "contextMenu";
+	menuElement.id = "actionMenu";
+	
+	var loadFlashElement = document.createElement("li");
+	loadFlashElement.className = "menuItem";
+	loadFlashElement.innerHTML = "Load Flash";
+	loadFlashElement.id = "loadFlashMenuItem";
+	loadFlashElement.onclick = function(event){origThis.loadFlashForElement(placeholderElement);};
+	menuElement.appendChild(loadFlashElement);
+	
+	if (this.videoElementMapping[elementID]) {
+		var loadH264Element = document.createElement("li");
+		loadH264Element.className = "menuItem";
+		loadH264Element.innerHTML = "Load in Quicktime";
+		loadH264Element.id = "loadQuicktimeMenuItem";
+		loadH264Element.onclick = function(event){origThis.loadH264ForElement(placeholderElement);};
+		menuElement.appendChild(loadH264Element);
+	}
+	
+	placeholderElement.appendChild(menuElement);
+	
+	var closeMenuClickHandler = function(event) {
+		var removeMenuElement = function() {
+			placeholderElement.removeChild(menuElement);
+		}
+		document.getElementsByTagName("body")[0].removeEventListener("mousedown", closeMenuClickHandler, false);
+		menuElement.style.opacity = "0 !important";
+		setTimeout(removeMenuElement, 150);
+	};
+	document.getElementsByTagName("body")[0].addEventListener("mousedown", closeMenuClickHandler, false);
+};
+
+ClickToFlash.prototype.loadFlashForElement = function(placeholderElement) {
+	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
+	var element = this.elementMapping[elementID];
+	element.allowedToLoad = true;
+	placeholderElement.parentNode.replaceChild(element, placeholderElement);
+};
+
+ClickToFlash.prototype.loadH264ForElement = function(placeholderElement) {
+	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
+	var element = this.videoElementMapping[elementID];
+	element.style.width = placeholderElement.style.width;
+	element.style.height = placeholderElement.style.height;
+	placeholderElement.parentNode.replaceChild(element, placeholderElement);
+};
 
 ClickToFlash.prototype.clickPlaceholder = function(event) {
 	var clickedElement = event.target;
+	
+	if (clickedElement.className == "actionButton" || clickedElement.className == "contextMenu" || clickedElement.className == "menuItem") {
+		return;
+	}
 	
 	while (clickedElement.className != "clickToFlashPlaceholder") {
 		clickedElement = clickedElement.parentNode;
@@ -47,19 +109,15 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 
 	var element = this.videoElementMapping[elementID];
 	if (!element) {
-		element = this.elementMapping[elementID];
-		element.allowedToLoad = true;
+		this.loadFlashForElement(clickedElement);
 	} else {
-		element.style.width = clickedElement.style.width;
-		element.style.height = clickedElement.style.height;
+		this.loadH264ForElement(clickedElement);
 	}
-	
-	clickedElement.parentNode.replaceChild(element, clickedElement);
-}
+};
 
 ClickToFlash.prototype.isSIFRText = function(element) {
 	return (element.className == "sIFR-flash" || element.getAttribute("sifr"));
-}
+};
 
 ClickToFlash.prototype.processFlashElement = function(element) {
 	// Check if it's already in the mapping dictionary
@@ -117,6 +175,11 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	logoInsetElement.className = "logo inset";
 	logoContainer.appendChild(logoInsetElement);
 	
+	var actionButtonElement = document.createElement("div");
+	actionButtonElement.className = "actionButton";
+	placeholderElement.appendChild(actionButtonElement);
+	actionButtonElement.onclick = this.openActionMenuTrampoline;
+	
 	// Wait until the placeholder has a width and height, then
 	// check if we should minify or hide the badge
 	var badgeHide = function() {
@@ -143,21 +206,6 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	// Deal with h264 videos
 	var flashvars = element.getAttribute("flashvars");
 	var src = element.src;
-	
-/*	if (!src) {
-		var params = element.getElementsByTagName("param");
-		for (i = 0; i < params.length; i++) {
-			var paramName = params[i].getAttribute("name");
-			if (paramName == "movie") {
-				src = params[i].getAttribute("value");
-				break;
-			}
-		}
-	}
-	
-	if (!src) {
-		return;
-	}*/
 	
 	// This is hacky, but it's an easy way to convert the possibly-relative
 	// src URL into an absolute one
@@ -225,7 +273,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 			break;
 		}
 	}
-}
+};
 
 getFlashVariable = function(flashVars, key) {
 	if (!flashVars)
@@ -239,7 +287,7 @@ getFlashVariable = function(flashVars, key) {
 		}
 	}
 	return null;
-}
+};
 
 var CTF = new ClickToFlash();
 CTF.killers = [new YouTubeKiller(), new DailyMotionKiller(), new VimeoKiller()];
