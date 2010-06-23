@@ -42,6 +42,10 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 
 ClickToFlash.prototype.openActionMenu = function(event) {
 	var placeholderElement = event.target.parentNode;
+	this.openContextMenu(placeholderElement, "18px", "18px");
+};
+
+ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top) {
 	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
 	
 	var origThis = this;
@@ -49,6 +53,8 @@ ClickToFlash.prototype.openActionMenu = function(event) {
 	var menuElement = document.createElement("menu");
 	menuElement.className = "contextMenu";
 	menuElement.id = "actionMenu";
+	menuElement.style.left = left;
+	menuElement.style.top = top;
 	
 	var loadFlashElement = document.createElement("li");
 	loadFlashElement.className = "menuItem";
@@ -148,6 +154,18 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 
 	var clickHandler = this;
 	placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
+	placeholderElement.oncontextmenu = function(event){
+		var left = event.offsetX;
+		var top = event.offsetY;
+		var clickedElement = event.target;
+		while (clickedElement.className != "clickToFlashPlaceholder") {
+			left += clickedElement.offsetLeft;
+			top += clickedElement.offsetTop;
+			clickedElement = clickedElement.parentNode;
+		}
+		clickHandler.openContextMenu(placeholderElement, left + "px", top + "px"); 
+		return false;
+	};
 
 	if (element.parentNode) {
 		element.parentNode.replaceChild(placeholderElement, element);

@@ -89,8 +89,6 @@
 
 .clickToFlashPlaceholder .contextMenu {
 	position: absolute !important;
-	left: 18px !important;
-	top: 18px !important;
 	background-color: rgba(255, 255, 255, 0.9) !important;
 	-webkit-user-select: none !important;
 	color: #000 !important;
@@ -125,4 +123,8 @@
 .clickToFlashPlaceholder .contextMenu li:hover {
 	background: -webkit-gradient(linear, left top, left bottom, from(rgb(94, 121, 253)), to(rgb(29, 60, 252))) !important;
 	color: #fff !important;
+	padding-top: 1px !important;
+	padding-bottom: 1px !important;
+	border-top: 1px solid rgb(84, 122, 244) !important;
+	border-bottom: 1px solid rgb(16, 39, 242) !important;
 }
