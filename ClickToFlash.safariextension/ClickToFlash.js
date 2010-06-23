@@ -141,6 +141,21 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	var flashvars = element.getAttribute("flashvars");
 	var src = element.src;
 	
+/*	if (!src) {
+		var params = element.getElementsByTagName("param");
+		for (i = 0; i < params.length; i++) {
+			var paramName = params[i].getAttribute("name");
+			if (paramName == "movie") {
+				src = params[i].getAttribute("value");
+				break;
+			}
+		}
+	}
+	
+	if (!src) {
+		return;
+	}*/
+	
 	// This is hacky, but it's an easy way to convert the possibly-relative
 	// src URL into an absolute one
 	var tempAnchor = document.createElement("a");
@@ -179,6 +194,8 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 				}  else if (videoURL) {
 					videoElementURL = videoURL;
 					badgeLabel = sender.badgeLabel;
+				} else {
+					return;
 				}
 				
 				var elementID = element.elementID;
@@ -208,6 +225,9 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 }
 
 getFlashVariable = function(flashVars, key) {
+	if (!flashVars)
+		return null;
+		
 	var vars = flashVars.split("&");
 	for (var i=0; i < vars.length; i++) {
 		var keyValuePair = vars[i].split("=");
@@ -219,4 +239,4 @@ getFlashVariable = function(flashVars, key) {
 }
 
 var CTF = new ClickToFlash();
-CTF.killers = [new YouTubeKiller(), new DailyMotionKiller()];
+CTF.killers = [new YouTubeKiller(), new DailyMotionKiller(), new VimeoKiller()];
