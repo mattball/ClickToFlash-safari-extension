@@ -211,6 +211,11 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 			if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth || (placeholderElement.offsetHeight - 4) < logoElement.offsetHeight) {
 				logoContainer.style.display = "none";
 			}
+			
+			// Check if we should hide the action button
+			if ((placeholderElement.offsetWidth - 4) < logoElement.offsetWidth + actionButtonElement.offsetWidth + 8 || (placeholderElement.offsetHeight - 4) < actionButtonElement.offsetHeight) {
+				actionButtonElement.style.display = "none";
+			} 
 		} else {
 			setTimeout(badgeHide, 100);
 		}
