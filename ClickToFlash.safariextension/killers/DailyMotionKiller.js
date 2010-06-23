@@ -1,8 +1,6 @@
 function DailyMotionKiller() {
 	this.sourcePatterns = ["dailymotion.com"];
 	this.flashVarsPatterns = ["dailymotion.com"];
-	this.badgeLabel = "DailyMotion";
-	this.hdBadgeLabel = "DailyMotion HD";
 }
 
 DailyMotionKiller.prototype.processElement = function(element, callback) {

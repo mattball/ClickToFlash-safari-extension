@@ -1,8 +1,6 @@
 function YouTubeKiller() {	
 	this.sourcePatterns = ["youtube.com", "youtube-nocookie.com", "ytimg.com"];
 	this.flashVarsPatterns = ["youtube.com", "youtube-nocookie.com", "ytimg.com"];
-	this.badgeLabel = "YouTube";
-	this.hdBadgeLabel = "YouTube HD";
 }
 
 YouTubeKiller.prototype.processElement = function(element, callback) {

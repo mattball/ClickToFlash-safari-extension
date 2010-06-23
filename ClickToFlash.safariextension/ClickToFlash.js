@@ -190,10 +190,10 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 				
 				if (shouldUseHD && hdVideoURL) {
 					videoElementURL = hdVideoURL;
-					badgeLabel = sender.hdBadgeLabel;
+					badgeLabel = "Quicktime HD";
 				}  else if (videoURL) {
 					videoElementURL = videoURL;
-					badgeLabel = sender.badgeLabel;
+					badgeLabel = "Quicktime";
 				} else {
 					return;
 				}

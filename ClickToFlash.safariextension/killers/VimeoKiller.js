@@ -1,8 +1,6 @@
 function VimeoKiller() {
 	this.sourcePatterns = ["vimeo.com"];
 	this.flashVarsPatterns = ["vimeo.com"];
-	this.badgeLabel = "Vimeo";
-	this.hdBadgeLabel = "Vimeo HD";
 }
 
 VimeoKiller.prototype.processElement = function(element, callback) {

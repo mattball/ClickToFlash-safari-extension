@@ -1,8 +1,6 @@
 function Killer() {
 	this.sourcePatterns = [];
 	this.flashVarsPatterns = [];
-	this.badgeLabel = "h264";
-	this.hdBadgeLabel = "h264 HD";
 }
 
 /**
