@@ -49,6 +49,9 @@ ClickToFlash.prototype.clickPlaceholder = function(event) {
 	if (!element) {
 		element = this.elementMapping[elementID];
 		element.allowedToLoad = true;
+	} else {
+		element.style.width = clickedElement.style.width;
+		element.style.height = clickedElement.style.height;
 	}
 	
 	clickedElement.parentNode.replaceChild(element, clickedElement);
