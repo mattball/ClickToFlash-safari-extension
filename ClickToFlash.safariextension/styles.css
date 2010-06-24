@@ -94,7 +94,7 @@
 	color: #000 !important;
 	font-size: 14px !important;
 	z-index: 3 !important;
-	-webkit-box-shadow: 0 2px 5px #222 !important;
+	-webkit-box-shadow: 0 2px 5px #000 !important;
 	list-style: none !important;
 	margin: 0 !important;
 	border-radius: 4px !important;
@@ -120,11 +120,172 @@
 	border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
-.clickToFlashPlaceholder .contextMenu li:hover {
+.clickToFlashPlaceholder .contextMenu li.menuItem:hover {
 	background: -webkit-gradient(linear, left top, left bottom, from(rgb(94, 121, 253)), to(rgb(29, 60, 252))) !important;
 	color: #fff !important;
 	padding-top: 1px !important;
 	padding-bottom: 1px !important;
 	border-top: 1px solid rgb(84, 122, 244) !important;
 	border-bottom: 1px solid rgb(16, 39, 242) !important;
+}
+
+#whitelistBackground {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	background-color: rgba(0, 0, 0, 0.85) !important;
+	z-index: 10000 !important;
+	-webkit-transition-property: opacity;
+	-webkit-transition-duration: 0.5s;
+	opacity: 0;
+}
+
+#whitelistBackground.fadeIn {
+	opacity: 1;
+}
+
+#whitelistContainer {
+	width: 400px !important;
+	height: 450px !important;
+	background-color: #eee !important;
+	margin: 80px auto !important;
+	border-radius: 8px !important;
+	-webkit-box-shadow: 0 8px 15px #000 !important;
+	
+	-webkit-transition-property: -webkit-transform, opacity;
+	-webkit-transition-duration: 0.5s, 0.5s;
+	-webkit-transition-delay: 0, 0;
+	
+	-webkit-transform: scale(0.75);
+	opacity: 0;
+	
+	padding: 20px 40px !important;
+	font-family: "Helvetica Neue", Helvetica, sans-serif !important;
+	-webkit-user-select: none !important;
+	cursor: default !important;
+}
+
+#whitelistContainer.zoomFade {
+	-webkit-transform: scale(1);
+	opacity: 1;
+}
+
+#whitelistContainer h1 {
+	color: #444 !important;
+	font-size: 30px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+#whitelistContainer h2 {
+	color: #aaa !important;
+	font-size: 22px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+#whitelistContainer #whitelistSites {
+	background: #fff !important;
+	border: 1px solid rgb(140, 140, 140) !important;
+	position: absolute !important;
+	top: 100px !important;
+	left: 40px !important;
+	right: 40px !important;
+	bottom: 93px !important;
+	overflow: auto !important;
+	overflow-x: hidden !important;
+	list-style: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+#whitelistContainer #whitelistSites li {
+	height: 22px !important;
+	width: 100% !important;
+	border-bottom: 1px solid #ccc !important;
+	padding: 2px 4px !important;
+	line-height: 22px !important;
+	margin: 0 !important;
+}
+
+#whitelistContainer #whitelistSites li.selected {
+	background-color: rgb(56, 117, 215) !important;
+	color: #fff !important;
+	-webkit-user-select: text !important;
+}
+
+#whitelistContainer #buttonBar {
+	position: absolute !important;
+	bottom: 70px !important;
+	left: 40px !important;
+	right: 40px !important;
+	height: 22px !important;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(250, 250, 250)),
+	                color-stop(0.5, rgb(248, 248, 248)), color-stop(0.51, rgb(234, 234, 234)), color-stop(1.0, rgb(236, 236, 236))) !important;
+	border: 1px solid rgb(140, 140, 140) !important;
+	border-top: 1px solid rgb(180, 180, 180) !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+#whitelistContainer #buttonBar button {
+	width: 32px !important;
+	height: 22px !important;
+	margin-top: 0 !important;
+	border-right: 1px solid rgb(140, 140, 140) !important;
+	font-size: 16px !important;
+	font-family: "Helvetica Neue", Helvetica, sans-serif !important;
+	font-weight: bold !important;
+	padding: 0 !important;
+	color: #444 !important;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+#whitelistContainer #buttonBar button:active {
+	background-color: rgba(0, 0, 0, 0.4) !important;
+	border-color: rgb(100, 100, 100) !important;
+}
+
+#whitelistBottomButtons {
+	position: absolute !important;
+	bottom: 20px !important;
+	right: 40px !important;
+}
+
+#whitelistBottomButtons button {
+	border-radius: 4px !important;
+	padding: 8px 32px !important;
+	font-size: 12px !important;
+	font-weight: bold !important;
+	color: rgb(100, 100, 100) !important;
+	text-shadow: 0 1px 0 #fff !important;
+	border: 1px solid rgb(140, 140, 140) !important;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(241, 241, 241)),
+	                color-stop(0.5, rgb(220, 220, 220)), color-stop(0.51, rgb(210, 210, 210)), color-stop(1.0, rgb(220, 220, 220))) !important;
+	-webkit-box-shadow: 0 1px 0 #fff !important;
+}
+
+#whitelistContainer button:active {
+	background: -webkit-gradient(linear, left bottom, left top, from(rgb(241, 241, 241)), to(rgb(220, 220, 220))) !important;
+}
+
+#whitelistContainer button#cancelButton {
+	float: left !important;
+	margin-right: 10px !important;
+}
+
+#whitelistContainer button#saveButton {
+	color: #fff !important;
+	text-shadow: 0 -1px 0 rgb(22, 100, 22) !important;
+	border-color: rgb(22, 100, 22) !important;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(98, 171, 98)),
+	                color-stop(0.5, rgb(47, 149, 48)), color-stop(0.51, rgb(7, 137, 8)), color-stop(1.0, rgb(1, 130, 2))) !important;
+	
+}
+
+#whitelistContainer button#saveButton:active {
+	background: -webkit-gradient(linear, left bottom, left top, from(rgb(98, 171, 98)), to(rgb(1, 130, 2))) !important;
+	text-shadow: 0 1px 2px rgb(22, 100, 22) !important;
 }

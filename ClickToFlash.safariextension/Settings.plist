@@ -64,5 +64,9 @@
 			<string>autoload</string>
 		</array>
 	</dict>
+	<dict>
+		<key>Key</key>
+		<string>whitelist</string>
+	</dict>
 </array>
 </plist>

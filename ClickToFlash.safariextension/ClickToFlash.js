@@ -43,10 +43,133 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 			
 		element.elementID = this.elementMapping.length;
 		this.settings = safari.self.tab.canLoad(event, "getSettings");
+		this.settings["whitelist"] = this.settings["whitelist"].split(",");
 			
 		event.preventDefault();
 		this.processFlashElement(element);
 	}
+};
+
+ClickToFlash.prototype.openWhitelist = function() {
+	var bg = document.createElement("div");
+	bg.id = "whitelistBackground";
+	var origThis = this;
+	bg.onclick = function(event) {
+		if (event.target.id == "whitelistBackground") {
+			origThis.closeWhitelist();
+		}
+	};
+	
+	var container = document.createElement("div");
+	container.id = "whitelistContainer";
+	bg.appendChild(container);
+	document.body.appendChild(bg);
+	
+	var mainHeader = document.createElement("h1");
+	mainHeader.innerHTML = "ClickToFlash";
+	container.appendChild(mainHeader);
+	
+	var subHeader = document.createElement("h2");
+	subHeader.innerHTML = "Site Whitelist";
+	container.appendChild(subHeader);
+	
+	var listBox = document.createElement("ul");
+	listBox.id = "whitelistSites";
+	container.appendChild(listBox);
+	
+	var createNewElement = function() {
+		var newElement = document.createElement("li");
+		newElement.innerHTML = "www.example.com";
+		listBox.appendChild(newElement);
+		newElement.onclick = function(event) {
+			// Deselect the current selection
+			for (i = 0; i < listBox.childNodes.length; i++) {
+				var currentItem = listBox.childNodes[i];
+				currentItem.className = currentItem.className.replace("selected", "");
+			}
+			event.target.className = "selected";
+		};
+		newElement.setAttribute("contentEditable", "plaintext-only");
+		return newElement;
+	};
+	
+	for (i = 0; i < this.settings["whitelist"].length; i++) {
+		var currentWhitelist = this.settings["whitelist"][i];
+		if (!currentWhitelist.length) {
+			continue;
+		}
+		
+		var newItem = createNewElement();
+		newItem.innerHTML = currentWhitelist;
+	}
+	
+	var buttonBar = document.createElement("div");
+	buttonBar.id = "buttonBar";
+	container.appendChild(buttonBar);
+	
+	var addButton = document.createElement("button");
+	addButton.id = "addWhitelistButton";
+	addButton.innerHTML = "+";
+	buttonBar.appendChild(addButton);
+	addButton.onclick = createNewElement;
+	
+	var removeButton = document.createElement("button");
+	removeButton.id = "removeWhitelistButton";
+	removeButton.innerHTML = "&ndash;";
+	buttonBar.appendChild(removeButton);
+	removeButton.onclick = function(event) {
+		for (i = 0; i < listBox.childNodes.length; i++) {
+			var currentItem = listBox.childNodes[i];
+			if (currentItem.className == "selected") {
+				listBox.removeChild(currentItem);
+				break;
+			}
+		}
+	};
+	
+	var bottomButtons = document.createElement("div");
+	bottomButtons.id = "whitelistBottomButtons";
+	container.appendChild(bottomButtons);
+	
+	var cancelButton = document.createElement("button");
+	cancelButton.setAttribute("type", "button");
+	cancelButton.id = "cancelButton";
+	cancelButton.innerHTML = "Cancel";
+	cancelButton.onclick = function(event){origThis.closeWhitelist();};
+	bottomButtons.appendChild(cancelButton);
+	
+	var saveButton = document.createElement("button");
+	saveButton.setAttribute("type", "button");
+	saveButton.id = "saveButton";
+	saveButton.innerHTML = "Save";
+	saveButton.onclick = function(event){
+		var whitelistSites = [];
+		for (i = 0; i < listBox.childNodes.length; i++) {
+			whitelistSites[whitelistSites.length] = listBox.childNodes[i].innerHTML.replace("<br>", "");
+		}
+		
+		var newWhitelistString = whitelistSites.join(",");
+		safari.self.tab.dispatchMessage("setWhitelist", newWhitelistString);
+		origThis.settings["whitelist"] = whitelistSites;
+		
+		origThis.closeWhitelist();
+	};
+	bottomButtons.appendChild(saveButton);
+	
+	setTimeout(function(){
+		bg.className = "fadeIn"; 
+		container.className = "zoomFade";
+	}, 10);
+};
+
+ClickToFlash.prototype.closeWhitelist = function() {
+	var container = document.getElementById("whitelistContainer");
+	var bg = document.getElementById("whitelistBackground");
+	
+	container.className = "";
+	bg.className = "";
+	
+	setTimeout(function(){document.body.removeChild(bg);}, 510);
 };
 
 ClickToFlash.prototype.openActionMenu = function(event) {
@@ -80,6 +203,16 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 		loadH264Element.onclick = function(event){origThis.loadH264ForElement(placeholderElement);};
 		menuElement.appendChild(loadH264Element);
 	}
+	
+	var sepElement = document.createElement("li");
+	sepElement.className = "separator";
+	menuElement.appendChild(sepElement);
+
+	var openWhitelistElement = document.createElement("li");
+	openWhitelistElement.className = "menuItem";
+	openWhitelistElement.innerHTML = "Edit Whitelist...";
+	openWhitelistElement.onclick = function(event){origThis.openWhitelist();};
+	menuElement.appendChild(openWhitelistElement);
 	
 	placeholderElement.appendChild(menuElement);
 	

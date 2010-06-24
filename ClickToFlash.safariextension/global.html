@@ -8,6 +8,11 @@
 				settings.useH264 = safari.extension.settings["useH264"];
 				settings.useHDH264 = safari.extension.settings["useHDH264"];
 				settings.sifrReplacement = safari.extension.settings["sifrReplacement"];
+				settings.whitelist = safari.extension.settings["whitelist"];
+				if (!settings.whitelist) {
+					settings.whitelist = "";
+				}
+
 				return settings;
 			}
 			
@@ -19,6 +24,8 @@
 					if (data == "getSettings") {
 						event.message = getSettings();
 					}
+				} else if (event.name == "setWhitelist") {
+					safari.extension.settings["whitelist"] = event.message;
 				}
 			}
 			
