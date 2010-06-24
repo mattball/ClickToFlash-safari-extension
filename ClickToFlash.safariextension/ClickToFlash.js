@@ -31,6 +31,9 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 	if (element instanceof HTMLEmbedElement || element instanceof HTMLObjectElement) {
 		if (element.allowedToLoad)
 			return;
+		
+		this.settings = safari.self.tab.canLoad(event, "getSettings");
+		this.settings["whitelist"] = this.settings["whitelist"].split(",");
 			
 		// Deal with sIFR first
 		if (this.isSIFRText(element)) {
@@ -40,11 +43,24 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 				return;
 			}
 		}
+		
+		// This is hacky, but it's an easy way to convert the possibly-relative
+		// src URL into an absolute one
+		var tempAnchor = document.createElement("a");
+		tempAnchor.href = element.src;
+		element.src = tempAnchor.href;
+		tempAnchor = null;
+		
+		// Check if the element matches anything on the whitelist
+		for (i = 0; i < this.settings["whitelist"].length; i++) {
+			var currentWhitelistItem = this.settings["whitelist"][i];
+			if (currentWhitelistItem.length && (element.src.match(currentWhitelistItem) || location.href.match(currentWhitelistItem))) {
+				element.allowedToLoad = true;
+				return;
+			}
+		}
 			
-		element.elementID = this.elementMapping.length;
-		this.settings = safari.self.tab.canLoad(event, "getSettings");
-		this.settings["whitelist"] = this.settings["whitelist"].split(",");
-			
+		element.elementID = this.elementMapping.length;	
 		event.preventDefault();
 		this.processFlashElement(element);
 	}
@@ -367,13 +383,6 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	// Deal with h264 videos
 	var flashvars = element.getAttribute("flashvars");
 	var src = element.src;
-	
-	// This is hacky, but it's an easy way to convert the possibly-relative
-	// src URL into an absolute one
-	var tempAnchor = document.createElement("a");
-	tempAnchor.href = src;
-	src = tempAnchor.href;
-	tempAnchor = null;
 	
 	for (i = 0; i < this.killers.length; i++) {
 		var currentKiller = this.killers[i];
