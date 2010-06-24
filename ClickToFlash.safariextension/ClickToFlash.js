@@ -32,10 +32,17 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 		if (element.allowedToLoad)
 			return;
 			
+		// Deal with sIFR first
+		if (this.isSIFRText(element)) {
+			var autoloadSIFR = this.settings["sifrReplacement"];
+			if (this.settings["sifrReplacement"] == "autoload") {
+				element.allowedToLoad = true;
+				return;
+			}
+		}
+			
 		element.elementID = this.elementMapping.length;
 		this.settings = safari.self.tab.canLoad(event, "getSettings");
-			
-	//	alert("Element: " + element.elementID);
 			
 		event.preventDefault();
 		this.processFlashElement(element);
@@ -132,16 +139,6 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	// If so, the user must have clicked it already
 	if (this.elementMapping[element.elementID]) {
 		return;
-	}
-	
-	// Deal with sIFR first
-	if (this.isSIFRText(element)) {
-		var autoloadSIFR = this.settings["sifrReplacement"];
-		if (this.settings["sifrReplacement"] == "autoload") {
-			// Just stop processing. The flash movie will
-			// continue being loaded
-			return;
-		}
 	}
 
 	var placeholderElement = document.createElement("div");
