@@ -243,6 +243,7 @@
 	color: #444 !important;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 	background: none !important;
+	padding-bottom: 2px !important;
 }
 
 #whitelistContainer #buttonBar button:active {
@@ -263,10 +264,11 @@
 	font-weight: bold !important;
 	color: rgb(100, 100, 100) !important;
 	text-shadow: 0 1px 0 #fff !important;
-	border: 1px solid rgb(140, 140, 140) !important;
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(241, 241, 241)),
 	                color-stop(0.5, rgb(220, 220, 220)), color-stop(0.51, rgb(210, 210, 210)), color-stop(1.0, rgb(220, 220, 220))) !important;
 	-webkit-box-shadow: 0 1px 0 #fff !important;
+	border-top: 1px solid rgb(255, 255, 255) !important;
+	-webkit-box-shadow: 0 0 0 1px rgb(140, 140, 140), 0 1px 0 1px #fff !important;
 }
 
 #whitelistContainer button:active {
@@ -281,13 +283,15 @@
 #whitelistContainer button#saveButton {
 	color: #fff !important;
 	text-shadow: 0 -1px 0 rgb(22, 100, 22) !important;
-	border-color: rgb(22, 100, 22) !important;
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(98, 171, 98)),
 	                color-stop(0.5, rgb(47, 149, 48)), color-stop(0.51, rgb(7, 137, 8)), color-stop(1.0, rgb(1, 130, 2))) !important;
 	
+	-webkit-box-shadow: 0 0 0 1px rgb(22, 100, 22), 0 1px 0 1px #fff !important;
+	border-color: rgb(155, 205, 153) !important;
 }
 
 #whitelistContainer button#saveButton:active {
 	background: -webkit-gradient(linear, left bottom, left top, from(rgb(98, 171, 98)), to(rgb(1, 130, 2))) !important;
 	text-shadow: 0 1px 2px rgb(22, 100, 22) !important;
+	border-color: rgb(97, 171, 97) !important;
 }
