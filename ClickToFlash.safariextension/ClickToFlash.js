@@ -35,6 +35,8 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 		element.elementID = this.elementMapping.length;
 		this.settings = safari.self.tab.canLoad(event, "getSettings");
 			
+	//	alert("Element: " + element.elementID);
+			
 		event.preventDefault();
 		this.processFlashElement(element);
 	}
@@ -168,7 +170,13 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	};
 
 	if (element.parentNode) {
-		element.parentNode.replaceChild(placeholderElement, element);
+		// Wait 5ms before replacing the element. If we don't, the following
+		// WebKit bug will cause CTF to crash on certain sites:
+		//     https://bugs.webkit.org/show_bug.cgi?id=41054
+		// This was fixed on June 23, 2010, but it's unlikely to show up
+		// in a release version of Safari for a while. Until then,
+		// this workaround seems to work.
+		setTimeout(function(){element.parentNode.replaceChild(placeholderElement, element);}, 5);
 	}
 	
 	var verticalPositionElement = document.createElement("div");
