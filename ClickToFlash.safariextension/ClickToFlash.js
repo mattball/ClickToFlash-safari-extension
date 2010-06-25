@@ -343,19 +343,6 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		clickHandler.openContextMenu(placeholderElement, left + "px", top + "px"); 
 		return false;
 	};
-	
-	var clickAndHoldTimeout;
-	placeholderElement.onmousedown = function(event) {
-		var clickedAndHeld = function() {
-			didClickAndHold = true;
-			placeholderElement.oncontextmenu(event);
-		};
-		didClickAndHold = false;
-		clickAndHoldTimeout = setTimeout(clickedAndHeld, 750);
-	};
-	placeholderElement.onmouseup = function(event) {
-		clearTimeout(clickAndHoldTimeout);
-	};
 
 	if (element.parentNode) {
 		// Wait 5ms before replacing the element. If we don't, the following
@@ -397,6 +384,19 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	actionButtonElement.className = "actionButton";
 	container.appendChild(actionButtonElement);
 	actionButtonElement.onclick = function(event){if(!didClickAndHold){clickHandler.openActionMenu(event);}};
+	
+	var clickAndHoldTimeout;
+	actionButtonElement.onmousedown = function(event) {
+		var clickedAndHeld = function() {
+			didClickAndHold = true;
+			placeholderElement.oncontextmenu(event);
+		};
+		didClickAndHold = false;
+		clickAndHoldTimeout = setTimeout(clickedAndHeld, 250);
+	};
+	actionButtonElement.onmouseup = function(event) {
+		clearTimeout(clickAndHoldTimeout);
+	};
 	
 	// Wait until the placeholder has a width and height, then
 	// check if we should minify or hide the badge
