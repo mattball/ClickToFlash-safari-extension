@@ -337,19 +337,10 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		var left = event.offsetX;
 		var top = event.offsetY;
 		var clickedElement = event.target;
-		while (clickedElement.className != "clickToFlashPlaceholder") {
+		while (clickedElement.className != "clickToFlashPlaceholderContainer") {
 			left += clickedElement.offsetLeft;
 			top += clickedElement.offsetTop;
 			clickedElement = clickedElement.parentNode;
-		}
-		
-		// Get the container
-		for (i = 0; i < clickedElement.childNodes.length; i++) {
-			var currentNode = clickedElement.childNodes[i];
-			if (currentNode.className == "clickToFlashPlaceholderContainer") {
-				clickedElement = currentNode;
-				break;
-			}
 		}
 		
 		clickHandler.openContextMenu(clickedElement, left + "px", top + "px"); 
