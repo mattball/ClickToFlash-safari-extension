@@ -27,6 +27,17 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 	if (element instanceof HTMLEmbedElement || element instanceof HTMLObjectElement) {
 		if (element.allowedToLoad)
 			return;
+			
+		if (element instanceof HTMLObjectElement) {
+			var type = element.getAttribute("type");
+			if (!type) {
+				return;
+			}
+			
+			if (!type.match("application/x-shockwave-flash") && !type.match("application/futuresplash")) {
+				return;
+			}
+		}
 		
 		this.settings = safari.self.tab.canLoad(event, "getSettings");
 		this.settings["whitelist"] = this.settings["whitelist"].split(",");
