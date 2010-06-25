@@ -1,3 +1,18 @@
+/* Reset random stuff that might be set by the parent page */
+.clickToFlashPlaceholder *,
+#whitelistContainer * {
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	text-align: left !important;
+	background: none !important;
+}
+
+/*********************
+ *** =Placeholder ****
+ *********************/
+
 .clickToFlashPlaceholder {
 	background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.15)), to(rgba(0, 0, 0, 0.15))) !important;
 	border: 1px solid rgba(0, 0, 0, 0.5) !important;
@@ -57,10 +72,10 @@
 	padding: 28px 10px 14px 10px !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
-	line-height: 0 !important;
 	background: none !important;
 	position: relative !important;
 	height: auto !important;
+	line-height: 0 !important;
 }
 
 .clickToFlashPlaceholder .logo.inset {
@@ -85,7 +100,6 @@
 	opacity: 0.0 !important;
 	-webkit-transition-property: opacity;
 	-webkit-transition-duration: 0.25s;
-	border: 0 !important;
 	z-index: 2 !important;
 }
 
@@ -102,7 +116,6 @@
 	z-index: 3 !important;
 	-webkit-box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3) !important;
 	list-style: none !important;
-	margin: 0 !important;
 	border-radius: 4px !important;
 	padding: 4px 0 !important;
 	-webkit-transition-property: opacity;
@@ -116,7 +129,6 @@
 	cursor: default !important;
 	font-weight: normal !important;
 	font-family: "Lucida Grande", Helvetica, sans-serif !important;
-	text-align: left !important;
 }
 
 .clickToFlashPlaceholder .contextMenu li.separator {
@@ -135,6 +147,10 @@
 	border-top: 1px solid rgb(84, 122, 244) !important;
 	border-bottom: 1px solid rgb(16, 39, 242) !important;
 }
+
+/*********************
+ **** =Whitelist *****
+ *********************/
 
 #whitelistBackground {
 	position: fixed !important;
@@ -173,7 +189,6 @@
 	-webkit-user-select: none !important;
 	cursor: default !important;
 	
-	border: 0 !important;
 	border-top: 1px solid #fff !important;
 	font-size: 12px !important;
 }
@@ -186,15 +201,12 @@
 #whitelistContainer h1 {
 	color: #444 !important;
 	font-size: 30px !important;
-	padding: 0 !important;
-	margin: 0 !important;
 }
 
 #whitelistContainer h2 {
 	color: #aaa !important;
 	font-size: 22px !important;
-	padding: 0 !important;
-	margin: 0 !important;
+	line-height: 12px !important;
 }
 
 #whitelistContainer #whitelistSites {
@@ -208,8 +220,6 @@
 	overflow: auto !important;
 	overflow-x: hidden !important;
 	list-style: none !important;
-	margin: 0 !important;
-	padding: 0 !important;
 }
 
 #whitelistContainer #whitelistSites li {
@@ -218,7 +228,6 @@
 	border-bottom: 1px solid #ccc !important;
 	padding: 2px 4px !important;
 	line-height: 22px !important;
-	margin: 0 !important;
 }
 
 #whitelistContainer #whitelistSites li.selected {
@@ -237,24 +246,19 @@
 	                color-stop(0.5, rgb(248, 248, 248)), color-stop(0.51, rgb(234, 234, 234)), color-stop(1.0, rgb(236, 236, 236))) !important;
 	border: 1px solid rgb(140, 140, 140) !important;
 	border-top: 1px solid rgb(180, 180, 180) !important;
-	margin: 0 !important;
-	padding: 0 !important;
 }
 
 #whitelistContainer #buttonBar button {
 	width: 32px !important;
 	height: 22px !important;
-	margin: 0 !important;
-	border: 0 !important;
 	border-right: 1px solid rgb(140, 140, 140) !important;
 	font-size: 16px !important;
 	font-family: "Helvetica Neue", Helvetica, sans-serif !important;
 	font-weight: bold !important;
-	padding: 0 !important;
 	color: #444 !important;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-	background: none !important;
 	padding-bottom: 2px !important;
+	text-align: center !important;
 }
 
 #whitelistContainer #buttonBar button:active {
@@ -277,6 +281,7 @@
 }
 
 #whitelistBottomButtons button {
+	text-align: center !important;
 	border-radius: 4px !important;
 	padding: 8px 32px !important;
 	font-size: 12px !important;
@@ -286,7 +291,6 @@
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(241, 241, 241)),
 	                color-stop(0.5, rgb(220, 220, 220)), color-stop(0.51, rgb(210, 210, 210)), color-stop(1.0, rgb(220, 220, 220))) !important;
 	-webkit-box-shadow: 0 1px 0 #fff !important;
-	border: 0 !important;
 	border-top: 1px solid rgb(255, 255, 255) !important;
 	-webkit-box-shadow: 0 0 0 1px rgb(140, 140, 140), 0 1px 0 1px #fff !important;
 }
