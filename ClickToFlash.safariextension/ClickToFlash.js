@@ -189,7 +189,26 @@ ClickToFlash.prototype.closeWhitelist = function() {
 };
 
 ClickToFlash.prototype.openActionMenu = function(event) {
-	var placeholderElement = event.target.parentNode;
+	// Get the element
+	var placeholderElement = event.target;
+	while (placeholderElement && placeholderElement.className != "clickToFlashPlaceholder") {
+		placeholderElement = placeholderElement.parentNode;
+	}
+	
+	// Just in case
+	if (!placeholderElement) {
+		placeholderElement = event.target;
+	} else {
+		// Get the container
+		for (i = 0; i < placeholderElement.childNodes.length; i++) {
+			var currentNode = placeholderElement.childNodes[i];
+			if (currentNode.className == "clickToFlashPlaceholderContainer") {
+				placeholderElement = currentNode;
+				break;
+			}
+		}
+	}
+	
 	this.openContextMenu(placeholderElement, "18px", "18px");
 };
 
@@ -311,6 +330,16 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 			top += clickedElement.offsetTop;
 			clickedElement = clickedElement.parentNode;
 		}
+		
+		// Get the container
+		for (i = 0; i < clickedElement.childNodes.length; i++) {
+			var currentNode = clickedElement.childNodes[i];
+			if (currentNode.className == "clickToFlashPlaceholderContainer") {
+				clickedElement = currentNode;
+				break;
+			}
+		}
+		
 		clickHandler.openContextMenu(placeholderElement, left + "px", top + "px"); 
 		return false;
 	};
@@ -325,9 +354,13 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		setTimeout(function(){element.parentNode.replaceChild(placeholderElement, element);}, 5);
 	}
 	
+	var container = document.createElement("div");
+	container.className = "clickToFlashPlaceholderContainer";
+	placeholderElement.appendChild(container);
+	
 	var verticalPositionElement = document.createElement("div");
 	verticalPositionElement.className = "logoVerticalPosition";
-	placeholderElement.appendChild(verticalPositionElement);
+	container.appendChild(verticalPositionElement);
 
 	var horizontalPositionElement = document.createElement("div");
 	horizontalPositionElement.className = "logoHorizontalPosition";
@@ -349,7 +382,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	
 	var actionButtonElement = document.createElement("div");
 	actionButtonElement.className = "actionButton";
-	placeholderElement.appendChild(actionButtonElement);
+	container.appendChild(actionButtonElement);
 	actionButtonElement.onclick = this.openActionMenuTrampoline;
 	
 	// Wait until the placeholder has a width and height, then

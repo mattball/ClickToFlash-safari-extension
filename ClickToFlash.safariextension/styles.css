@@ -10,11 +10,17 @@
 	background: -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.15)), to(rgba(0, 0, 0, 0.15))) !important;
 }
 
+.clickToFlashPlaceholderContainer {
+	position: relative !important;
+	width: inherit !important;
+	height: inherit !important;
+}
+
 .logoVerticalPosition {
 	display: table-cell !important; 
 	vertical-align: middle !important;
-	width: auto !important;
-	height: auto !important;
+	width: inherit !important;
+	height: inherit !important;
 }
 
 .logoHorizontalPosition {
@@ -50,7 +56,6 @@
 	padding: 28px 10px 14px 10px !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
-	margin: 0 auto !important;
 	line-height: 0 !important;
 	background: none !important;
 	position: relative !important;
