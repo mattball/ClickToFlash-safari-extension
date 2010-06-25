@@ -267,6 +267,7 @@
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, rgb(241, 241, 241)),
 	                color-stop(0.5, rgb(220, 220, 220)), color-stop(0.51, rgb(210, 210, 210)), color-stop(1.0, rgb(220, 220, 220))) !important;
 	-webkit-box-shadow: 0 1px 0 #fff !important;
+	border: 0 !important;
 	border-top: 1px solid rgb(255, 255, 255) !important;
 	-webkit-box-shadow: 0 0 0 1px rgb(140, 140, 140), 0 1px 0 1px #fff !important;
 }
