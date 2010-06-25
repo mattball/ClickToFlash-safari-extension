@@ -154,22 +154,26 @@
 	border-radius: 8px !important;
 	-webkit-box-shadow: 0 8px 15px #000 !important;
 	
-	-webkit-transition-property: -webkit-transform, opacity;
-	-webkit-transition-duration: 0.5s, 0.5s;
-	-webkit-transition-delay: 0, 0;
+	-webkit-transition-property: -webkit-transform, opacity !important;
+	-webkit-transition-duration: 0.5s, 0.5s !important;
+	-webkit-transition-delay: 0, 0 !important;
 	
-	-webkit-transform: scale(0.75);
-	opacity: 0;
+	-webkit-transform: scale(0.75) !important;
+	opacity: 0 !important;
 	
 	padding: 20px 40px !important;
 	font-family: "Helvetica Neue", Helvetica, sans-serif !important;
 	-webkit-user-select: none !important;
 	cursor: default !important;
+	
+	border: 0 !important;
+	border-top: 1px solid #fff !important;
+	font-size: 12px !important;
 }
 
 #whitelistContainer.zoomFade {
-	-webkit-transform: scale(1);
-	opacity: 1;
+	-webkit-transform: scale(1) !important;
+	opacity: 1 !important;
 }
 
 #whitelistContainer h1 {
@@ -233,7 +237,7 @@
 #whitelistContainer #buttonBar button {
 	width: 32px !important;
 	height: 22px !important;
-	margin-top: 0 !important;
+	margin: 0 !important;
 	border: 0 !important;
 	border-right: 1px solid rgb(140, 140, 140) !important;
 	font-size: 16px !important;
@@ -248,7 +252,15 @@
 
 #whitelistContainer #buttonBar button:active {
 	background-color: rgba(0, 0, 0, 0.4) !important;
-	border-color: rgb(100, 100, 100) !important;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+	color: rgb(40, 40, 40) !important;
+	
+	border: 1px solid rgb(100, 100, 100) !important;
+	
+	margin-top: -1px !important;
+	margin-left: -1px !important;
+	height: 24px !important;
+	width: 33px !important;
 }
 
 #whitelistBottomButtons {
