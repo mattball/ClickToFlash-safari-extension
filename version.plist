@@ -10,11 +10,11 @@
        <key>Developer Identifier</key>
        <string>U3PBX763Z5</string>
        <key>CFBundleVersion</key>
-       <string>1.2.0</string>
+       <string>1.2.1</string>
        <key>CFBundleShortVersionString</key>
-       <string>1.2.0</string>
+       <string>1.2.1</string>
        <key>URL</key>
-       <string>http://github.com/downloads/mattball/ClickToFlash-safari-extension/ClickToFlash-1.2.0.safariextz</string>
+       <string>http://github.com/downloads/mattball/ClickToFlash-safari-extension/ClickToFlash-1.2.1.safariextz</string>
      </dict>
    </array>
 </dict>
