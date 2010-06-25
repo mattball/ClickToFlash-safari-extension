@@ -17,10 +17,6 @@ function ClickToFlash() {
 		_this.handleBeforeLoadEvent(event);
 	};
 	
-	this.openActionMenuTrampoline = function(event) {
-		_this.openActionMenu(event);
-	};
-	
 	safari.self.addEventListener("message", this.respondToMessage, false);
 	document.addEventListener("beforeload", this.handleBeforeLoadEventTrampoline, true);
 }
@@ -322,8 +318,9 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	this.elementMapping[id] = element;
 	placeholderElement.id = "ClickToFlashPlaceholder" + id;
 
+	var didClickAndHold = false;
 	var clickHandler = this;
-	placeholderElement.onclick = function(event){clickHandler.clickPlaceholder(event)};
+	placeholderElement.onclick = function(event){if (!didClickAndHold) {clickHandler.clickPlaceholder(event)}};
 	placeholderElement.oncontextmenu = function(event){
 		var left = event.offsetX;
 		var top = event.offsetY;
@@ -345,6 +342,19 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		
 		clickHandler.openContextMenu(placeholderElement, left + "px", top + "px"); 
 		return false;
+	};
+	
+	var clickAndHoldTimeout;
+	placeholderElement.onmousedown = function(event) {
+		var clickedAndHeld = function() {
+			didClickAndHold = true;
+			placeholderElement.oncontextmenu(event);
+		};
+		didClickAndHold = false;
+		clickAndHoldTimeout = setTimeout(clickedAndHeld, 750);
+	};
+	placeholderElement.onmouseup = function(event) {
+		clearTimeout(clickAndHoldTimeout);
 	};
 
 	if (element.parentNode) {
@@ -386,7 +396,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	var actionButtonElement = document.createElement("div");
 	actionButtonElement.className = "actionButton";
 	container.appendChild(actionButtonElement);
-	actionButtonElement.onclick = this.openActionMenuTrampoline;
+	actionButtonElement.onclick = function(event){if(!didClickAndHold){clickHandler.openActionMenu(event);}};
 	
 	// Wait until the placeholder has a width and height, then
 	// check if we should minify or hide the badge
