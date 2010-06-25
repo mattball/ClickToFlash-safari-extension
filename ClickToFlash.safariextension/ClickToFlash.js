@@ -209,7 +209,8 @@ ClickToFlash.prototype.openActionMenu = function(event) {
 };
 
 ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top) {
-	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
+	// placeholderElement is the clickToFlashPlaceholderContainer
+	var elementID = parseInt(placeholderElement.parentNode.id.replace("ClickToFlashPlaceholder", ""));
 	
 	var origThis = this;
 	
@@ -226,7 +227,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 	// the placeholder
 	loadFlashElement.innerHTML = "Load&nbsp;Flash";
 	loadFlashElement.id = "loadFlashMenuItem";
-	loadFlashElement.onclick = function(event){origThis.loadFlashForElement(placeholderElement);};
+	loadFlashElement.onclick = function(event){origThis.loadFlashForElement(placeholderElement.parentNode);};
 	menuElement.appendChild(loadFlashElement);
 	
 	if (this.videoElementMapping[elementID]) {
@@ -234,7 +235,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 		loadH264Element.className = "menuItem";
 		loadH264Element.innerHTML = "Load&nbsp;in&nbsp;QuickTime";
 		loadH264Element.id = "loadQuicktimeMenuItem";
-		loadH264Element.onclick = function(event){origThis.loadH264ForElement(placeholderElement);};
+		loadH264Element.onclick = function(event){origThis.loadH264ForElement(placeholderElement.parentNode);};
 		menuElement.appendChild(loadH264Element);
 	}
 	
@@ -340,7 +341,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 			}
 		}
 		
-		clickHandler.openContextMenu(placeholderElement, left + "px", top + "px"); 
+		clickHandler.openContextMenu(clickedElement, left + "px", top + "px"); 
 		return false;
 	};
 
@@ -457,10 +458,10 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 				
 				if (shouldUseHD && hdVideoURL) {
 					videoElementURL = hdVideoURL;
-					badgeLabel = "Quicktime HD";
+					badgeLabel = "QuickTime HD";
 				}  else if (videoURL) {
 					videoElementURL = videoURL;
-					badgeLabel = "Quicktime";
+					badgeLabel = "QuickTime";
 				} else {
 					return;
 				}
@@ -480,9 +481,9 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 				videoMapping[elementID] = videoElement;
 				
 				// Change the placeholder text
-				var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.childNodes[0];
+				var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.firstChild.childNodes[0];
 				placeholderLogoInset.innerHTML = badgeLabel;
-				var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.childNodes[1];
+				var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.firstChild.childNodes[1];
 				placeholderLogo.innerHTML = badgeLabel;
 			};
 			currentKiller.processElement(element, killerCallback);
