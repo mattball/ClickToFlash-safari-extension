@@ -288,10 +288,22 @@ ClickToFlash.prototype.loadFlashForElement = function(placeholderElement) {
 
 ClickToFlash.prototype.loadH264ForElement = function(placeholderElement) {
 	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
-	var element = this.videoElementMapping[elementID];
-	element.style.width = placeholderElement.style.width;
-	element.style.height = placeholderElement.style.height;
-	placeholderElement.parentNode.replaceChild(element, placeholderElement);
+	var videoURL = this.videoElementMapping[elementID];
+	
+	var flashElement = this.elementMapping[elementID];
+	var flashvars = flashElement.getAttribute("flashvars");
+	
+	// Create the video element
+	var videoElement = document.createElement("video");
+	videoElement.src = videoURL;
+	videoElement.setAttribute("controls", "controls");
+	if (getFlashVariable(flashvars, "autoplay") == "1") {
+		videoElement.setAttribute("autoplay", "autoplay");
+	}
+	videoElement.style = placeholderElement.style;
+	videoElement.style.width = placeholderElement.style.width;
+	videoElement.style.height = placeholderElement.style.height;
+	placeholderElement.parentNode.replaceChild(videoElement, placeholderElement);
 };
 
 ClickToFlash.prototype.clickPlaceholder = function(event) {
@@ -476,17 +488,7 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 				
 				var elementID = element.elementID;
 				
-				// Create the video element
-				var videoElement = document.createElement("video");
-				videoElement.src = videoElementURL;
-				videoElement.setAttribute("controls", "controls");
-				if (getFlashVariable(flashvars, "autoplay") == "1") {
-					videoElement.setAttribute("autoplay", "autoplay");
-				}
-				videoElement.style = placeholderElement.style;
-				videoElement.style.width = placeholderElement.offsetWidth + "px";
-				videoElement.style.height = placeholderElement.offsetHeight + "px";
-				videoMapping[elementID] = videoElement;
+				videoMapping[elementID] = videoElementURL;
 				
 				// Change the placeholder text
 				var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.firstChild.childNodes[0];
