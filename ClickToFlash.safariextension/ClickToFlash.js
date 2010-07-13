@@ -31,6 +31,12 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 		if (element instanceof HTMLObjectElement) {
 			var type = element.getAttribute("type");
 			if (!type) {
+				var embeds = element.getElementsByTagName("embed");
+				if (embeds.length) {
+					type = embeds[0].getAttribute("type");
+				}
+			}
+			if (!type) {
 				return;
 			}
 			
